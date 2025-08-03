@@ -2,14 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+/* Weather App Design System - Beautiful Sky Theme
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    /* Sky-inspired color palette */
+    --background: 210 40% 98%;
     --foreground: 222.2 84% 4.9%;
+    
+    /* Weather theme colors */
+    --sky-blue: 204 100% 70%;
+    --sky-blue-light: 204 100% 85%;
+    --sky-blue-dark: 204 100% 55%;
+    --sunset-orange: 30 100% 60%;
+    --cloud-white: 0 0% 98%;
+    --rain-blue: 220 60% 50%;
+    --sunny-yellow: 48 100% 67%;
+    
+    /* Gradients */
+    --gradient-sky: linear-gradient(135deg, hsl(var(--sky-blue-light)), hsl(var(--sky-blue)));
+    --gradient-sunset: linear-gradient(135deg, hsl(var(--sunset-orange)), hsl(var(--sky-blue)));
+    --gradient-rain: linear-gradient(135deg, hsl(var(--rain-blue)), hsl(var(--sky-blue-dark)));
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --animation-float: float 6s ease-in-out infinite;
+    --animation-pulse-slow: pulse 4s ease-in-out infinite;
 
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -17,11 +37,11 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 204 100% 55%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 204 100% 95%;
+    --secondary-foreground: 222.2 84% 4.9%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
@@ -102,4 +122,53 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Weather App Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px hsl(var(--primary) / 0.3); }
+  50% { box-shadow: 0 0 30px hsl(var(--primary) / 0.5); }
+}
+
+/* Custom utility classes */
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
+.animate-fade-in { animation: fade-in 0.6s ease-out; }
+.animate-slide-in { animation: slide-in 0.5s ease-out; }
+.animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.weather-card {
+  transition: var(--transition-smooth);
+}
+
+.weather-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
 }
