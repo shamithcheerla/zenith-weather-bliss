@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Search, MapPin, Sun, Cloud, CloudRain, Eye, Wind, Droplets, Sunrise, Sunset, Navigation, Loader2, Star, Clock, Thermometer, Gauge, AlertTriangle, Heart, Zap } from 'lucide-react';
+import { Search, MapPin, Sun, Cloud, CloudRain, Eye, Wind, Droplets, Sunrise, Sunset, Navigation, Loader2, Star, Clock, Thermometer, Gauge, AlertTriangle, Heart, Zap, Compass, Home, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
-import { weatherService, type LocationData } from '@/services/weatherService';
+import { weatherService, type LocationData, type ForecastData } from '@/services/weatherService';
+import WeatherAnimations from './WeatherAnimations';
+import WeatherTips from './WeatherTips';
 
 // Import background images
 import sunnySkyBg from '@/assets/sunny-sky-bg.jpg';
@@ -32,12 +35,7 @@ interface WeatherData {
   forecast: ForecastData[];
 }
 
-interface ForecastData {
-  date: string;
-  temperature: number;
-  condition: string;
-  icon: string;
-}
+// ForecastData interface is now imported from weatherService
 
 interface SearchSuggestion {
   name: string;
@@ -55,6 +53,7 @@ const EnhancedWeatherDashboard = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [favoriteLocations, setFavoriteLocations] = useState<LocationData[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
 
   // Update time every minute
   useEffect(() => {
@@ -148,11 +147,11 @@ const EnhancedWeatherDashboard = () => {
       if (weather) {
         const weatherDataWithForecast: WeatherData = {
           ...weather,
-          pressure: generateAtmosphericPressure(weather.condition),
-          uvIndex: generateUVIndex(currentTime.getHours()),
-          airQuality: generateAirQuality(location.lat, location.lon),
-          dewPoint: Math.round(weather.temperature - ((100 - weather.humidity) / 5)),
-          forecast: generateRealisticForecast(weather.temperature, weather.condition) // Realistic forecast based on current weather
+          pressure: weather.pressure || generateAtmosphericPressure(weather.condition),
+          uvIndex: weather.uvIndex || generateUVIndex(currentTime.getHours()),
+          airQuality: weather.airQuality || generateAirQuality(location.lat, location.lon),
+          dewPoint: weather.dewPoint || Math.round(weather.temperature - ((100 - weather.humidity) / 5)),
+          forecast: weather.forecast || generateRealisticForecast(weather.temperature, weather.condition)
         };
         setWeatherData(weatherDataWithForecast);
         
@@ -187,6 +186,13 @@ const EnhancedWeatherDashboard = () => {
       
       if (location) {
         await fetchWeatherByLocation(location);
+        
+        // Add to search history
+        setSearchHistory(prev => {
+          const updated = [searchLocation, ...prev.filter(item => item !== searchLocation)];
+          return updated.slice(0, 5); // Keep only 5 recent searches
+        });
+        
         toast.success(`Weather data found for ${location.name}!`);
       } else {
         toast.error('Location not found. Please try a different search term or check the spelling.');
@@ -309,6 +315,14 @@ const EnhancedWeatherDashboard = () => {
       className="min-h-screen bg-cover bg-center bg-no-repeat relative"
       style={{ backgroundImage: `url(${backgroundImage})` }}
     >
+      {/* Weather Animations */}
+      {weatherData && (
+        <WeatherAnimations 
+          condition={weatherData.condition} 
+          intensity={weatherData.windSpeed > 20 ? 'heavy' : weatherData.windSpeed > 10 ? 'medium' : 'light'}
+        />
+      )}
+      
       {/* Overlay for better text readability */}
       <div className="absolute inset-0 bg-black/30"></div>
       
@@ -380,21 +394,42 @@ const EnhancedWeatherDashboard = () => {
                 </Button>
               </div>
               
-              {/* Favorite Locations */}
-              {favoriteLocations.length > 0 && (
-                <div className="flex gap-2 flex-wrap">
-                  <span className="text-white/80 text-sm">Recent searches:</span>
-                  {favoriteLocations.map((location, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="cursor-pointer hover:bg-white/20 bg-white/10 text-white border-white/20"
-                      onClick={() => fetchWeatherByLocation(location)}
-                    >
-                      <Star className="w-3 h-3 mr-1" />
-                      {location.name}
-                    </Badge>
-                  ))}
+              {/* Search History and Favorite Locations */}
+              {(searchHistory.length > 0 || favoriteLocations.length > 0) && (
+                <div className="space-y-2">
+                  {searchHistory.length > 0 && (
+                    <div className="flex gap-2 flex-wrap">
+                      <span className="text-white/80 text-sm">Recent searches:</span>
+                      {searchHistory.map((search, index) => (
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="cursor-pointer hover:bg-white/10 bg-white/5 text-white border-white/20"
+                          onClick={() => setSearchLocation(search)}
+                        >
+                          <Clock className="w-3 h-3 mr-1" />
+                          {search}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {favoriteLocations.length > 0 && (
+                    <div className="flex gap-2 flex-wrap">
+                      <span className="text-white/80 text-sm">Favorite locations:</span>
+                      {favoriteLocations.map((location, index) => (
+                        <Badge
+                          key={index}
+                          variant="secondary"
+                          className="cursor-pointer hover:bg-white/20 bg-white/10 text-white border-white/20"
+                          onClick={() => fetchWeatherByLocation(location)}
+                        >
+                          <Star className="w-3 h-3 mr-1" />
+                          {location.name}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </form>
@@ -544,27 +579,14 @@ const EnhancedWeatherDashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Weather Alert */}
-            <Card className="glass-effect border-white/20 weather-card">
-              <CardHeader>
-                <CardTitle className="text-white text-lg flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-amber-400" />
-                  Today's Tip
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-white/90 text-sm">
-                  {weatherData.condition.includes('Rain') 
-                    ? "Don't forget your umbrella today! ☔" 
-                    : weatherData.temperature > 30 
-                    ? "Stay hydrated! It's quite warm outside. 🌡️" 
-                    : weatherData.temperature < 10 
-                    ? "Bundle up! It's chilly out there. 🧥"
-                    : "Perfect weather for outdoor activities! ✨"
-                  }
-                </div>
-              </CardContent>
-            </Card>
+            {/* Weather Tips */}
+            <WeatherTips 
+              temperature={weatherData.temperature}
+              condition={weatherData.condition}
+              humidity={weatherData.humidity}
+              uvIndex={weatherData.uvIndex || 0}
+              windSpeed={weatherData.windSpeed}
+            />
           </div>
         )}
 

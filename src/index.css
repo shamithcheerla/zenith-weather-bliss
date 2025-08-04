@@ -150,6 +150,24 @@ All colors MUST be HSL.
   50% { box-shadow: 0 0 30px hsl(var(--primary) / 0.5); }
 }
 
+@keyframes rainfall {
+  to { transform: translateY(100vh); }
+}
+
+@keyframes snowfall {
+  to { transform: translateY(100vh) translateX(20px); }
+}
+
+@keyframes cloudDrift {
+  from { transform: translateX(-100px); }
+  to { transform: translateX(calc(100vw + 100px)); }
+}
+
+@keyframes sunRays {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
+}
+
 /* Custom utility classes */
 .animate-float { animation: float 6s ease-in-out infinite; }
 .animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
@@ -169,5 +187,29 @@ All colors MUST be HSL.
 
 .weather-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Enhanced Progress Bar Animations */
+.progress-animated {
+  transition: width 1s ease-out;
+}
+
+/* Beautiful Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
