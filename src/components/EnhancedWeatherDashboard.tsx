@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, MapPin, Sun, Cloud, CloudRain, Eye, Wind, Droplets, Sunrise, Sunset, Navigation, Loader2, Star, Clock, Thermometer, Gauge, AlertTriangle, Heart, Zap, Compass, Home, TrendingUp } from 'lucide-react';
+import { Search, MapPin, Sun, Cloud, CloudRain, Eye, Wind, Droplets, Sunrise, Sunset, Navigation, Loader2, Star, Clock, Thermometer, Gauge, AlertTriangle, Heart, Zap, Compass, Home, TrendingUp, Copy, Share2, RefreshCw, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,8 @@ import { toast } from 'sonner';
 import { weatherService, type LocationData, type ForecastData } from '@/services/weatherService';
 import WeatherAnimations from './WeatherAnimations';
 import WeatherTips from './WeatherTips';
+import WeatherCard from './WeatherCard';
+import LoadingDots from './ui/loading-dots';
 
 // Import background images
 import sunnySkyBg from '@/assets/sunny-sky-bg.jpg';
@@ -110,10 +112,12 @@ const EnhancedWeatherDashboard = () => {
     fetchWeatherByLocation(suggestion);
   };
 
-  // Get user's current location
-  const getCurrentLocation = () => {
-    setLoading(true);
+  // Enhanced geolocation with better accuracy and location name resolution
+  const handleCurrentLocation = () => {
     if (navigator.geolocation) {
+      setLoading(true);
+      toast.info('Getting your location...');
+      
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
@@ -124,13 +128,35 @@ const EnhancedWeatherDashboard = () => {
             lon: longitude
           };
           await fetchWeatherByLocation(locationData);
+          toast.success('Location detected successfully!');
         },
         (error) => {
           console.error('Error getting location:', error);
-          toast.error('Could not get your location. Please enter a city manually.');
+          let errorMessage = 'Could not get your location. ';
+          
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage += 'Please allow location access and try again.';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage += 'Location information is unavailable.';
+              break;
+            case error.TIMEOUT:
+              errorMessage += 'Location request timed out.';
+              break;
+            default:
+              errorMessage += 'Please enter a city manually.';
+              break;
+          }
+          
+          toast.error(errorMessage);
           setLoading(false);
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+        { 
+          enableHighAccuracy: true, 
+          timeout: 15000, 
+          maximumAge: 60000 // Cache for 1 minute
+        }
       );
     } else {
       toast.error('Geolocation is not supported by this browser.');
@@ -384,13 +410,17 @@ const EnhancedWeatherDashboard = () => {
                 </Button>
                 <Button
                   type="button"
-                  onClick={getCurrentLocation}
+                  onClick={handleCurrentLocation}
                   disabled={loading}
                   variant="outline"
                   className="bg-white/10 border-white/30 text-white hover:bg-white/20"
                 >
-                  <Navigation className="w-4 h-4 mr-2" />
-                  Use My Location
+                  {loading ? (
+                    <LoadingDots />
+                  ) : (
+                    <Navigation className="w-4 h-4 mr-2" />
+                  )}
+                  {loading ? 'Detecting...' : 'Use My Location'}
                 </Button>
               </div>
               

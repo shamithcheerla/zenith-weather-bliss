@@ -168,12 +168,24 @@ All colors MUST be HSL.
   50% { opacity: 0.6; transform: scale(1.1); }
 }
 
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes loading-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
 /* Custom utility classes */
 .animate-float { animation: float 6s ease-in-out infinite; }
 .animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
 .animate-fade-in { animation: fade-in 0.6s ease-out; }
 .animate-slide-in { animation: slide-in 0.5s ease-out; }
 .animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+.animate-shimmer { animation: shimmer 1.5s ease-in-out infinite; }
+.animate-loading-pulse { animation: loading-pulse 2s ease-in-out infinite; }
 
 .glass-effect {
   background: rgba(255, 255, 255, 0.1);

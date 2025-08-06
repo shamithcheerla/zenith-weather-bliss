@@ -90,60 +90,175 @@ export class EnhancedWeatherService {
     ).slice(0, 5);
   }
 
-  // Search multiple locations for suggestions
+  // Search multiple locations for suggestions with enhanced global coverage
   async searchMultipleLocations(query: string): Promise<LocationData[]> {
     try {
       // First search from our built-in database
       const databaseResults = this.searchFromDatabase(query);
       
-      if (databaseResults.length > 0) {
-        return databaseResults;
-      }
+      // Try multiple geocoding services for better coverage
+      const onlineResults = await this.searchFromMultipleAPIs(query);
       
-      // If not found in database, try online geocoding as fallback
-      try {
-        const response = await fetch(
-          `https://api.bigdatacloud.net/data/geo-autocomplete?countryCode=&query=${encodeURIComponent(query)}&limit=5`
-        );
-        
-        if (response.ok) {
-          const data = await response.json();
-          return data.map((location: any) => ({
-            name: location.name || query,
-            country: location.countryName || 'Unknown',
-            state: location.regionName,
-            lat: location.latitude,
-            lon: location.longitude
-          }));
-        }
-      } catch (error) {
-        console.log('Online geocoding failed, using database only');
-      }
+      // Combine and deduplicate results
+      const allResults = [...databaseResults, ...onlineResults];
+      const uniqueResults = this.deduplicateLocations(allResults);
       
-      return [];
+      return uniqueResults.slice(0, 8); // Return top 8 results
     } catch (error) {
       console.error('Multiple location search failed:', error);
-      return [];
+      return this.searchFromDatabase(query); // Fallback to database only
     }
   }
 
-  // Get location name from coordinates using reverse geocoding
-  private async reverseGeocode(lat: number, lon: number): Promise<string> {
+  // Enhanced search using multiple APIs for better global coverage
+  private async searchFromMultipleAPIs(query: string): Promise<LocationData[]> {
+    const results: LocationData[] = [];
+    
     try {
-      // Try to get actual location name using free reverse geocoding
+      // Try Nominatim (OpenStreetMap) for global coverage including small villages
+      const nominatimResponse = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&addressdetails=1`
+      );
+      
+      if (nominatimResponse.ok) {
+        const nominatimData = await nominatimResponse.json();
+        const nominatimResults = nominatimData.map((location: any) => ({
+          name: location.display_name.split(',')[0] || location.name || query,
+          country: location.address?.country || 'Unknown',
+          state: location.address?.state || location.address?.region,
+          lat: parseFloat(location.lat),
+          lon: parseFloat(location.lon)
+        }));
+        results.push(...nominatimResults);
+      }
+    } catch (error) {
+      console.log('Nominatim search failed, trying BigDataCloud');
+    }
+
+    try {
+      // BigDataCloud as secondary source
+      const bigDataResponse = await fetch(
+        `https://api.bigdatacloud.net/data/geo-autocomplete?query=${encodeURIComponent(query)}&limit=3`
+      );
+      
+      if (bigDataResponse.ok) {
+        const bigDataResults = await bigDataResponse.json();
+        const formattedResults = bigDataResults.map((location: any) => ({
+          name: location.name || query,
+          country: location.countryName || 'Unknown',
+          state: location.regionName,
+          lat: location.latitude,
+          lon: location.longitude
+        }));
+        results.push(...formattedResults);
+      }
+    } catch (error) {
+      console.log('BigDataCloud search failed');
+    }
+
+    return results;
+  }
+
+  // Remove duplicate locations based on proximity
+  private deduplicateLocations(locations: LocationData[]): LocationData[] {
+    const unique: LocationData[] = [];
+    
+    for (const location of locations) {
+      const isDuplicate = unique.some(existing => 
+        Math.abs(existing.lat - location.lat) < 0.01 && 
+        Math.abs(existing.lon - location.lon) < 0.01
+      );
+      
+      if (!isDuplicate) {
+        unique.push(location);
+      }
+    }
+    
+    return unique;
+  }
+
+  // Enhanced reverse geocoding with multiple API fallbacks
+  private async reverseGeocode(lat: number, lon: number): Promise<string> {
+    // Try multiple reverse geocoding services for better accuracy
+    
+    try {
+      // First try Nominatim (OpenStreetMap) - more detailed for villages
+      const nominatimResponse = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1&zoom=14`
+      );
+      
+      if (nominatimResponse.ok) {
+        const data = await nominatimResponse.json();
+        if (data.address) {
+          const locationName = data.address.village || 
+                              data.address.town || 
+                              data.address.city || 
+                              data.address.municipality ||
+                              data.address.county ||
+                              data.address.state_district ||
+                              data.address.state;
+          
+          if (locationName) {
+            return locationName;
+          }
+        }
+      }
+    } catch (error) {
+      console.log('Nominatim reverse geocoding failed, trying BigDataCloud');
+    }
+
+    try {
+      // Fallback to BigDataCloud
       const response = await fetch(
         `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
       );
       
       if (response.ok) {
         const data = await response.json();
-        return data.city || data.locality || data.principalSubdivision || 'Current Location';
+        const locationName = data.city || 
+                            data.locality || 
+                            data.localityInfo?.administrative?.[3]?.name ||
+                            data.localityInfo?.administrative?.[2]?.name ||
+                            data.principalSubdivision;
+        
+        if (locationName && locationName !== 'Unknown') {
+          return locationName;
+        }
       }
     } catch (error) {
-      console.log('Reverse geocoding failed, using fallback');
+      console.log('BigDataCloud reverse geocoding failed');
+    }
+    
+    // Last resort: check our database for nearby locations
+    try {
+      const nearbyLocation = this.findNearestLocationInDatabase(lat, lon);
+      if (nearbyLocation) {
+        return nearbyLocation.name;
+      }
+    } catch (error) {
+      console.log('Database lookup failed');
     }
     
     return 'Current Location';
+  }
+
+  // Find nearest location from our database
+  private findNearestLocationInDatabase(lat: number, lon: number): LocationData | null {
+    let nearest: LocationData | null = null;
+    let minDistance = Infinity;
+    
+    for (const location of LOCATION_DATABASE) {
+      const distance = Math.sqrt(
+        Math.pow(location.lat - lat, 2) + Math.pow(location.lon - lon, 2)
+      );
+      
+      if (distance < minDistance && distance < 0.5) { // Within ~50km
+        minDistance = distance;
+        nearest = location;
+      }
+    }
+    
+    return nearest;
   }
 
   async searchLocationWithFallback(query: string): Promise<LocationData | null> {
@@ -155,27 +270,11 @@ export class EnhancedWeatherService {
         return databaseResults[0];
       }
       
-      // If not found in database, try online geocoding as fallback
-      try {
-        const response = await fetch(
-          `https://api.bigdatacloud.net/data/geo-autocomplete?countryCode=IN&query=${encodeURIComponent(query)}&limit=1`
-        );
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (data.length > 0) {
-            const location = data[0];
-            return {
-              name: location.name || query,
-              country: location.countryName || 'Unknown',
-              state: location.regionName,
-              lat: location.latitude,
-              lon: location.longitude
-            };
-          }
-        }
-      } catch (error) {
-        console.log('Online geocoding failed, using database only');
+      // Enhanced online search with multiple services
+      const onlineResults = await this.searchFromMultipleAPIs(query);
+      
+      if (onlineResults.length > 0) {
+        return onlineResults[0];
       }
       
       return null;
