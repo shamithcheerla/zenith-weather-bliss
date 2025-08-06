@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, MapPin, Sun, Cloud, CloudRain, Eye, Wind, Droplets, Sunrise, Sunset, Navigation, Loader2, Star, Clock, Thermometer, Gauge, AlertTriangle, Heart, Zap, Compass, Home, TrendingUp, Copy, Share2, RefreshCw, MoreHorizontal } from 'lucide-react';
+import { Search, MapPin, Sun, Cloud, CloudRain, Eye, Wind, Droplets, Sunrise, Sunset, Navigation, Loader2, Star, Clock, Thermometer, Gauge, AlertTriangle, Heart, Zap, Compass, Home, TrendingUp, Copy, Share2, RefreshCw, MoreHorizontal, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -371,57 +371,62 @@ const EnhancedWeatherDashboard = () => {
         <Card className="mb-8 glass-effect border-white/20 animate-slide-in relative">
           <CardContent className="p-6">
             <form onSubmit={handleSearch} className="flex flex-col gap-4">
-              <div className="flex gap-4">
+              <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-6 h-6 md:w-5 md:h-5" />
                   <Input
                     type="text"
-                    placeholder="Search cities, villages, towns, or any location worldwide..."
+                    placeholder="Search any location worldwide..."
                     value={searchLocation}
                     onChange={(e) => handleSearchInput(e.target.value)}
-                    className="pl-10 bg-white/95 border-white/30 focus:bg-white text-foreground"
+                    className="pl-12 md:pl-10 h-12 md:h-10 text-lg md:text-base bg-white/95 border-white/30 focus:bg-white text-foreground hover:bg-white transition-all duration-300 focus:shadow-lg"
                     autoComplete="off"
                   />
                   
-                  {/* Search Suggestions */}
+                  {/* Search Suggestions - Fixed z-index and positioning */}
                   {showSuggestions && searchSuggestions.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 bg-white rounded-md shadow-lg mt-1 z-50 max-h-60 overflow-y-auto">
+                    <div className="fixed left-4 right-4 md:absolute md:left-0 md:right-0 top-full bg-white rounded-lg shadow-2xl mt-2 z-[9999] max-h-80 overflow-y-auto border border-gray-200 animate-fade-in">
                       {searchSuggestions.map((suggestion, index) => (
                         <button
                           key={index}
                           type="button"
                           onClick={() => handleSuggestionSelect(suggestion)}
-                          className="w-full text-left px-4 py-3 hover:bg-gray-100 flex items-center gap-2 border-b border-gray-100 last:border-b-0"
+                          className="w-full text-left px-4 py-4 md:py-3 hover:bg-blue-50 flex items-center gap-3 border-b border-gray-100 last:border-b-0 transition-all duration-200 hover:shadow-sm group"
                         >
-                          <MapPin className="w-4 h-4 text-gray-500" />
-                          <div>
-                            <div className="font-medium text-gray-900">{suggestion.name}</div>
-                            <div className="text-sm text-gray-500">
+                          <MapPin className="w-5 h-5 md:w-4 md:h-4 text-blue-500 group-hover:text-blue-600 transition-colors" />
+                          <div className="flex-1">
+                            <div className="font-medium text-gray-900 text-base md:text-sm group-hover:text-blue-900 transition-colors">{suggestion.name}</div>
+                            <div className="text-sm md:text-xs text-gray-500 group-hover:text-gray-600 transition-colors">
                               {suggestion.state && `${suggestion.state}, `}{suggestion.country}
                             </div>
+                          </div>
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                            <ArrowRight className="w-4 h-4 text-blue-500" />
                           </div>
                         </button>
                       ))}
                     </div>
                   )}
                 </div>
-                <Button type="submit" disabled={loading} className="bg-primary hover:bg-primary/90">
-                  {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Search'}
-                </Button>
-                <Button
-                  type="button"
-                  onClick={handleCurrentLocation}
-                  disabled={loading}
-                  variant="outline"
-                  className="bg-white/10 border-white/30 text-white hover:bg-white/20"
-                >
-                  {loading ? (
-                    <LoadingDots />
-                  ) : (
-                    <Navigation className="w-4 h-4 mr-2" />
-                  )}
-                  {loading ? 'Detecting...' : 'Use My Location'}
-                </Button>
+                <div className="flex gap-2 md:gap-4">
+                  <Button type="submit" disabled={loading} className="flex-1 md:flex-none h-12 md:h-10 bg-primary hover:bg-primary/90 hover:shadow-lg transition-all duration-300 hover:scale-105">
+                    {loading ? <Loader2 className="w-5 h-5 md:w-4 md:h-4 animate-spin" /> : 'Search'}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={handleCurrentLocation}
+                    disabled={loading}
+                    variant="outline"
+                    className="flex-1 md:flex-none h-12 md:h-10 bg-white/10 border-white/30 text-white hover:bg-white/20 hover:shadow-lg transition-all duration-300 hover:scale-105"
+                  >
+                    {loading ? (
+                      <LoadingDots />
+                    ) : (
+                      <Navigation className="w-5 h-5 md:w-4 md:h-4 mr-2" />
+                    )}
+                    {loading ? 'Detecting...' : 'My Location'}
+                  </Button>
+                </div>
               </div>
               
               {/* Search History and Favorite Locations */}
