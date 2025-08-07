@@ -11,6 +11,7 @@ import WeatherAnimations from './WeatherAnimations';
 import WeatherTips from './WeatherTips';
 import WeatherCard from './WeatherCard';
 import LoadingDots from './ui/loading-dots';
+import Footer from './Footer';
 
 // Import background images
 import sunnySkyBg from '@/assets/sunny-sky-bg.jpg';
@@ -391,47 +392,6 @@ const EnhancedWeatherDashboard = () => {
           </div>
         </div>
 
-        {/* Enhanced Controls Bar */}
-        <Card className="mb-6 glass-effect border-white/20 animate-slide-in">
-          <CardContent className="p-4">
-            <div className="flex flex-wrap gap-2 justify-center">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                className="text-white hover:bg-white/20 transition-all duration-300 group"
-              >
-                {isDarkMode ? <Sun className="w-4 h-4 mr-2 group-hover:rotate-45 transition-transform" /> : <Moon className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" />}
-                {isDarkMode ? 'Light' : 'Dark'} Mode
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setNotifications(!notifications)}
-                className="text-white hover:bg-white/20 transition-all duration-300 group"
-              >
-                <Bell className={`w-4 h-4 mr-2 transition-all duration-300 ${notifications ? 'animate-pulse text-yellow-300' : 'text-gray-400'} group-hover:scale-110`} />
-                Alerts {notifications ? 'On' : 'Off'}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-white hover:bg-white/20 transition-all duration-300 group"
-              >
-                <Globe className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" />
-                English
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-white hover:bg-white/20 transition-all duration-300 group"
-              >
-                <BarChart3 className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                Compare Cities
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Search Section */}
         <Card className="mb-8 glass-effect border-white/20 animate-slide-in relative overflow-visible">
@@ -791,6 +751,9 @@ const EnhancedWeatherDashboard = () => {
             <span className="ml-4 text-white text-lg drop-shadow-md">Loading weather data...</span>
           </div>
         )}
+        
+        {/* Footer */}
+        <Footer />
       </div>
     </div>
   );
