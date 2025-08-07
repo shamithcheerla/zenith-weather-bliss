@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Search, MapPin, Sun, Cloud, CloudRain, Eye, Wind, Droplets, Sunrise, Sunset, Navigation, Loader2, Star, Clock, Thermometer, Gauge, AlertTriangle, Heart, Zap, Compass, Home, TrendingUp, Copy, Share2, RefreshCw, MoreHorizontal, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, MapPin, Sun, Cloud, CloudRain, Eye, Wind, Droplets, Sunrise, Sunset, Navigation, Loader2, Star, Clock, Thermometer, Gauge, AlertTriangle, Heart, Zap, Compass, Home, TrendingUp, Copy, Share2, RefreshCw, MoreHorizontal, ArrowRight, X, Bell, Palette, Globe, BarChart3, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -56,10 +56,34 @@ const EnhancedWeatherDashboard = () => {
   const [favoriteLocations, setFavoriteLocations] = useState<LocationData[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [language, setLanguage] = useState('en');
+  const [notifications, setNotifications] = useState(true);
+  const [comparisonLocation, setComparisonLocation] = useState<WeatherData | null>(null);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Animated placeholders
+  const placeholders = [
+    "🏙️ Search New York, Paris, Tokyo...",
+    "🏝️ Discover Maldives, Bali, Hawaii...", 
+    "🗻 Explore Alps, Himalayas, Rockies...",
+    "🌆 Find London, Dubai, Sydney...",
+    "🏘️ Search your hometown...",
+    "🌍 Explore any place on Earth..."
+  ];
 
   // Update time every minute
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Animated placeholder rotation
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+    }, 3000);
     return () => clearInterval(timer);
   }, []);
 
@@ -367,34 +391,90 @@ const EnhancedWeatherDashboard = () => {
           </div>
         </div>
 
+        {/* Enhanced Controls Bar */}
+        <Card className="mb-6 glass-effect border-white/20 animate-slide-in">
+          <CardContent className="p-4">
+            <div className="flex flex-wrap gap-2 justify-center">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className="text-white hover:bg-white/20 transition-all duration-300 group"
+              >
+                {isDarkMode ? <Sun className="w-4 h-4 mr-2 group-hover:rotate-45 transition-transform" /> : <Moon className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" />}
+                {isDarkMode ? 'Light' : 'Dark'} Mode
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setNotifications(!notifications)}
+                className="text-white hover:bg-white/20 transition-all duration-300 group"
+              >
+                <Bell className={`w-4 h-4 mr-2 transition-all duration-300 ${notifications ? 'animate-pulse text-yellow-300' : 'text-gray-400'} group-hover:scale-110`} />
+                Alerts {notifications ? 'On' : 'Off'}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/20 transition-all duration-300 group"
+              >
+                <Globe className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" />
+                English
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/20 transition-all duration-300 group"
+              >
+                <BarChart3 className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
+                Compare Cities
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Search Section */}
-        <Card className="mb-8 glass-effect border-white/20 animate-slide-in relative">
+        <Card className="mb-8 glass-effect border-white/20 animate-slide-in relative overflow-visible">
           <CardContent className="p-6">
             <form onSubmit={handleSearch} className="flex flex-col gap-4">
               <div className="flex flex-col md:flex-row gap-4">
                 <div className="flex-1 relative">
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-6 h-6 md:w-5 md:h-5 z-10" />
+                  {searchLocation && (
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        setSearchLocation('');
+                        setShowSuggestions(false);
+                        searchInputRef.current?.focus();
+                      }}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-1 h-auto bg-transparent hover:bg-gray-100 rounded-full transition-all duration-200"
+                    >
+                      <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+                    </Button>
+                  )}
                   <Input
+                    ref={searchInputRef}
                     type="text"
-                    placeholder="🌍 Search any location worldwide..."
+                    placeholder={placeholders[placeholderIndex]}
                     value={searchLocation}
                     onChange={(e) => handleSearchInput(e.target.value)}
                     onFocus={() => searchLocation && setShowSuggestions(true)}
-                    className="pl-14 md:pl-12 h-14 md:h-12 text-lg md:text-base bg-white/95 border-white/30 focus:bg-white text-foreground hover:bg-white transition-all duration-300 focus:shadow-xl focus:border-blue-300 rounded-xl"
+                    className="pl-14 pr-12 md:pl-12 h-16 md:h-14 text-lg md:text-base bg-white/95 border-white/30 focus:bg-white text-foreground hover:bg-white transition-all duration-300 focus:shadow-xl focus:border-blue-300 rounded-xl placeholder:transition-all placeholder:duration-500"
                     autoComplete="off"
                   />
                   
-                  {/* Search Suggestions - Fixed positioning to prevent overlap */}
+                  {/* Search Suggestions - Properly positioned to avoid overlap */}
                   {showSuggestions && searchSuggestions.length > 0 && (
                     <>
                       {/* Mobile overlay */}
-                      <div className="fixed inset-0 bg-black/50 z-[9998] md:hidden" onClick={() => setShowSuggestions(false)}></div>
+                      <div className="fixed inset-0 bg-black/50 z-[100] md:hidden" onClick={() => setShowSuggestions(false)}></div>
                       
-                      {/* Search dropdown */}
-                      <div className="fixed top-20 left-4 right-4 md:absolute md:top-full md:left-0 md:right-0 bg-white rounded-xl shadow-2xl mt-2 z-[9999] max-h-[70vh] md:max-h-80 overflow-y-auto border border-gray-200 animate-fade-in">
+                      {/* Search dropdown - positioned properly */}
+                      <div className="absolute top-full left-0 right-0 bg-white rounded-xl shadow-2xl mt-2 z-[101] max-h-[60vh] overflow-y-auto border border-gray-200 animate-fade-in">
                         <div className="p-2">
-                          <div className="text-sm text-gray-500 px-3 py-2 border-b border-gray-100">
-                            Found {searchSuggestions.length} location{searchSuggestions.length !== 1 ? 's' : ''}
+                          <div className="text-sm text-gray-500 px-3 py-2 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
+                            ✨ Found {searchSuggestions.length} location{searchSuggestions.length !== 1 ? 's' : ''}
                           </div>
                           {searchSuggestions.map((suggestion, index) => (
                             <button
@@ -403,7 +483,7 @@ const EnhancedWeatherDashboard = () => {
                               onClick={() => handleSuggestionSelect(suggestion)}
                               className="w-full text-left px-4 py-4 md:py-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-lg margin-1 flex items-center gap-3 transition-all duration-300 hover:shadow-md group"
                             >
-                              <div className="p-2 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg group-hover:from-blue-200 group-hover:to-purple-200 transition-all duration-300">
+                              <div className="p-2 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg group-hover:from-blue-200 group-hover:to-purple-200 transition-all duration-300 group-hover:scale-110">
                                 <MapPin className="w-5 h-5 md:w-4 md:h-4 text-blue-600 group-hover:text-blue-700 transition-colors" />
                               </div>
                               <div className="flex-1">
@@ -413,7 +493,7 @@ const EnhancedWeatherDashboard = () => {
                                 </div>
                               </div>
                               <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                                <ArrowRight className="w-5 h-5 text-blue-500" />
+                                <ArrowRight className="w-5 h-5 text-blue-500 group-hover:scale-110" />
                               </div>
                             </button>
                           ))}
