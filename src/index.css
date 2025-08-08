@@ -217,6 +217,12 @@ All colors MUST be HSL.
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+/* Responsive Vanta.js container */
+.vanta-canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 .weather-card {
   transition: var(--transition-smooth);
 }

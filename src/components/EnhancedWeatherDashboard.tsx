@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, MapPin, Sun, Cloud, CloudRain, Eye, Wind, Droplets, Sunrise, Sunset, Navigation, Loader2, Star, Clock, Thermometer, Gauge, AlertTriangle, Heart, Zap, Compass, Home, TrendingUp, Copy, Share2, RefreshCw, MoreHorizontal, ArrowRight, X, Bell, Palette, Globe, BarChart3, Moon } from 'lucide-react';
+import { Search, MapPin, Sun, Cloud, CloudRain, Eye, Wind, Droplets, Sunrise, Sunset, Navigation, Loader2, Star, Clock, Thermometer, Gauge, AlertTriangle, Heart, Zap, Compass, Home, TrendingUp, Copy, Share2, RefreshCw, MoreHorizontal, ArrowRight, X, Bell, Palette, Globe, BarChart3, Moon, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,7 @@ import WeatherAnimations from './WeatherAnimations';
 import WeatherTips from './WeatherTips';
 import WeatherCard from './WeatherCard';
 import LoadingDots from './ui/loading-dots';
-import Footer from './Footer';
+import WeatherFooter from './WeatherFooter';
 
 // Import background images
 import sunnySkyBg from '@/assets/sunny-sky-bg.jpg';
@@ -57,10 +57,6 @@ const EnhancedWeatherDashboard = () => {
   const [favoriteLocations, setFavoriteLocations] = useState<LocationData[]>([]);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [language, setLanguage] = useState('en');
-  const [notifications, setNotifications] = useState(true);
-  const [comparisonLocation, setComparisonLocation] = useState<WeatherData | null>(null);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -362,399 +358,363 @@ const EnhancedWeatherDashboard = () => {
   const backgroundImage = weatherData ? getBackgroundImage(weatherData.condition, getTimeOfDay()) : sunnySkyBg;
 
   return (
-    <div 
-      className="min-h-screen bg-cover bg-center bg-no-repeat relative"
-      style={{ backgroundImage: `url(${backgroundImage})` }}
-    >
-      {/* Weather Animations */}
-      {weatherData && (
-        <WeatherAnimations 
-          condition={weatherData.condition} 
-          intensity={weatherData.windSpeed > 20 ? 'heavy' : weatherData.windSpeed > 10 ? 'medium' : 'light'}
-        />
-      )}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col relative overflow-hidden">
+      {/* Responsive background decorative elements */}
+      <div className="absolute inset-0 opacity-40" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.05\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"1\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')"}}></div>
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-sky-900/20 to-blue-900/20"></div>
       
-      {/* Overlay for better text readability */}
-      <div className="absolute inset-0 bg-black/30"></div>
-      
-      <div className="relative z-10 container mx-auto max-w-6xl p-4">
-        {/* Header */}
-        <div className="text-center mb-8 animate-fade-in">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 animate-float drop-shadow-lg">
-            🌤️ Weather Bliss
-          </h1>
-          <p className="text-xl text-white/90 mb-4 drop-shadow-md">
-            Beautiful weather insights for your world
-          </p>
-          <div className="flex items-center justify-center gap-2 text-white/80">
-            <Clock className="w-5 h-5" />
-            <span>{currentTime.toLocaleString()}</span>
-          </div>
-        </div>
-
-
-        {/* Search Section */}
-        <Card className="mb-8 glass-effect border-white/20 animate-slide-in relative overflow-visible">
-          <CardContent className="p-6">
-            <form onSubmit={handleSearch} className="flex flex-col gap-4">
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-6 h-6 md:w-5 md:h-5 z-10" />
-                  {searchLocation && (
-                    <Button
-                      type="button"
-                      onClick={() => {
-                        setSearchLocation('');
-                        setShowSuggestions(false);
-                        searchInputRef.current?.focus();
-                      }}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-1 h-auto bg-transparent hover:bg-gray-100 rounded-full transition-all duration-200"
-                    >
-                      <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
-                    </Button>
-                  )}
-                  <Input
-                    ref={searchInputRef}
-                    type="text"
-                    placeholder={placeholders[placeholderIndex]}
-                    value={searchLocation}
-                    onChange={(e) => handleSearchInput(e.target.value)}
-                    onFocus={() => searchLocation && setShowSuggestions(true)}
-                    className="pl-14 pr-12 md:pl-12 h-16 md:h-14 text-lg md:text-base bg-white/95 border-white/30 focus:bg-white text-foreground hover:bg-white transition-all duration-300 focus:shadow-xl focus:border-blue-300 rounded-xl placeholder:transition-all placeholder:duration-500"
-                    autoComplete="off"
-                  />
-                  
-                  {/* Search Suggestions - Properly positioned to avoid overlap */}
-                  {showSuggestions && searchSuggestions.length > 0 && (
-                    <>
-                      {/* Mobile overlay */}
-                      <div className="fixed inset-0 bg-black/50 z-[100] md:hidden" onClick={() => setShowSuggestions(false)}></div>
-                      
-                      {/* Search dropdown - positioned properly */}
-                      <div className="absolute top-full left-0 right-0 bg-white rounded-xl shadow-2xl mt-2 z-[101] max-h-[60vh] overflow-y-auto border border-gray-200 animate-fade-in">
-                        <div className="p-2">
-                          <div className="text-sm text-gray-500 px-3 py-2 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
-                            ✨ Found {searchSuggestions.length} location{searchSuggestions.length !== 1 ? 's' : ''}
-                          </div>
-                          {searchSuggestions.map((suggestion, index) => (
-                            <button
-                              key={index}
-                              type="button"
-                              onClick={() => handleSuggestionSelect(suggestion)}
-                              className="w-full text-left px-4 py-4 md:py-3 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-lg margin-1 flex items-center gap-3 transition-all duration-300 hover:shadow-md group"
-                            >
-                              <div className="p-2 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg group-hover:from-blue-200 group-hover:to-purple-200 transition-all duration-300 group-hover:scale-110">
-                                <MapPin className="w-5 h-5 md:w-4 md:h-4 text-blue-600 group-hover:text-blue-700 transition-colors" />
-                              </div>
-                              <div className="flex-1">
-                                <div className="font-semibold text-gray-900 text-base md:text-sm group-hover:text-blue-900 transition-colors">{suggestion.name}</div>
-                                <div className="text-sm md:text-xs text-gray-500 group-hover:text-gray-600 transition-colors">
-                                  {suggestion.state && `${suggestion.state}, `}{suggestion.country}
-                                </div>
-                              </div>
-                              <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                                <ArrowRight className="w-5 h-5 text-blue-500 group-hover:scale-110" />
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-                <div className="flex gap-2 md:gap-4">
-                  <Button type="submit" disabled={loading} className="flex-1 md:flex-none h-12 md:h-10 bg-primary hover:bg-primary/90 hover:shadow-lg transition-all duration-300 hover:scale-105">
-                    {loading ? <Loader2 className="w-5 h-5 md:w-4 md:h-4 animate-spin" /> : 'Search'}
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={handleCurrentLocation}
-                    disabled={loading}
-                    variant="outline"
-                    className="flex-1 md:flex-none h-12 md:h-10 bg-white/10 border-white/30 text-white hover:bg-white/20 hover:shadow-lg transition-all duration-300 hover:scale-105"
-                  >
-                    {loading ? (
-                      <LoadingDots />
-                    ) : (
-                      <Navigation className="w-5 h-5 md:w-4 md:h-4 mr-2" />
-                    )}
-                    {loading ? 'Detecting...' : 'My Location'}
-                  </Button>
-                </div>
-              </div>
-              
-              {/* Search History and Favorite Locations */}
-              {(searchHistory.length > 0 || favoriteLocations.length > 0) && (
-                <div className="space-y-2">
-                  {searchHistory.length > 0 && (
-                    <div className="flex gap-2 flex-wrap">
-                      <span className="text-white/80 text-sm">Recent searches:</span>
-                      {searchHistory.map((search, index) => (
-                        <Badge
-                          key={index}
-                          variant="outline"
-                          className="cursor-pointer hover:bg-white/10 bg-white/5 text-white border-white/20"
-                          onClick={() => setSearchLocation(search)}
-                        >
-                          <Clock className="w-3 h-3 mr-1" />
-                          {search}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                  
-                  {favoriteLocations.length > 0 && (
-                    <div className="flex gap-2 flex-wrap">
-                      <span className="text-white/80 text-sm">Favorite locations:</span>
-                      {favoriteLocations.map((location, index) => (
-                        <Badge
-                          key={index}
-                          variant="secondary"
-                          className="cursor-pointer hover:bg-white/20 bg-white/10 text-white border-white/20"
-                          onClick={() => fetchWeatherByLocation(location)}
-                        >
-                          <Star className="w-3 h-3 mr-1" />
-                          {location.name}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </form>
-          </CardContent>
-        </Card>
-
-        {/* Main Weather Display */}
+      <div className="flex-1 relative">
+        {/* Weather Animations */}
         {weatherData && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
-            {/* Current Weather - Main Card */}
-            <Card className="lg:col-span-2 glass-effect border-white/20 weather-card">
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl font-bold text-white flex items-center justify-center gap-2">
-                  <MapPin className="w-6 h-6" />
-                  {weatherData.location}
-                  {weatherData.country && (
-                    <Badge variant="outline" className="bg-white/10 text-white border-white/30">
-                      {weatherData.country}
-                    </Badge>
-                  )}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-center">
-                <div className="flex items-center justify-center mb-6 animate-float">
-                  {getWeatherIcon(weatherData.condition)}
-                </div>
-                <div className="text-6xl font-bold text-white mb-2 animate-pulse-glow drop-shadow-lg">
-                  {weatherData.temperature}°C
-                </div>
-                <div className="text-white/90 text-lg mb-2 capitalize drop-shadow-md">
-                  {weatherData.description}
-                </div>
-                <div className="text-white/80">
-                  Feels like {weatherData.feelsLike}°C
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Weather Details */}
-            <Card className="glass-effect border-white/20 weather-card">
-              <CardHeader>
-                <CardTitle className="text-white text-lg">Weather Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between text-white/90">
-                  <div className="flex items-center gap-2">
-                    <Droplets className="w-4 h-4 text-blue-300" />
-                    <span className="text-sm">Humidity</span>
-                  </div>
-                  <span className="font-semibold">{weatherData.humidity}%</span>
-                </div>
-                <div className="flex items-center justify-between text-white/90">
-                  <div className="flex items-center gap-2">
-                    <Wind className="w-4 h-4 text-gray-300" />
-                    <span className="text-sm">Wind Speed</span>
-                  </div>
-                  <span className="font-semibold">{weatherData.windSpeed} km/h</span>
-                </div>
-                <div className="flex items-center justify-between text-white/90">
-                  <div className="flex items-center gap-2">
-                    <Eye className="w-4 h-4 text-yellow-300" />
-                    <span className="text-sm">Visibility</span>
-                  </div>
-                  <span className="font-semibold">{weatherData.visibility} km</span>
-                </div>
-                <div className="flex items-center justify-between text-white/90">
-                  <div className="flex items-center gap-2">
-                    <Thermometer className="w-4 h-4 text-cyan-300" />
-                    <span className="text-sm">Dew Point</span>
-                  </div>
-                  <span className="font-semibold">{weatherData.dewPoint}°C</span>
-                </div>
-                <div className="flex items-center justify-between text-white/90">
-                  <div className="flex items-center gap-2">
-                    <Gauge className="w-4 h-4 text-purple-300" />
-                    <span className="text-sm">Pressure</span>
-                  </div>
-                  <span className="font-semibold">{weatherData.pressure} hPa</span>
-                </div>
-                <div className="flex items-center justify-between text-white/90">
-                  <div className="flex items-center gap-2">
-                    <Sunrise className="w-4 h-4 text-orange-300" />
-                    <span className="text-sm">Sunrise</span>
-                  </div>
-                  <span className="font-semibold">{weatherData.sunrise}</span>
-                </div>
-                <div className="flex items-center justify-between text-white/90">
-                  <div className="flex items-center gap-2">
-                    <Sunset className="w-4 h-4 text-orange-400" />
-                    <span className="text-sm">Sunset</span>
-                  </div>
-                  <span className="font-semibold">{weatherData.sunset}</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Enhanced Air Quality & UV Index Cards */}
-        {weatherData && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 animate-slide-in">
-            {/* Air Quality Index */}
-            <Card className="glass-effect border-white/20 weather-card">
-              <CardHeader>
-                <CardTitle className="text-white text-lg flex items-center gap-2">
-                  <Heart className="w-5 h-5 text-pink-400" />
-                  Air Quality
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-white mb-2">{weatherData.airQuality}</div>
-                  <div className={`font-semibold ${getAirQualityDesc(weatherData.airQuality || 0).color}`}>
-                    {getAirQualityDesc(weatherData.airQuality || 0).desc}
-                  </div>
-                  <div className="w-full bg-white/20 rounded-full h-2 mt-3">
-                    <div 
-                      className="bg-gradient-to-r from-green-400 to-red-400 h-2 rounded-full transition-all duration-500"
-                      style={{ width: `${Math.min((weatherData.airQuality || 0) / 200 * 100, 100)}%` }}
-                    ></div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* UV Index */}
-            <Card className="glass-effect border-white/20 weather-card">
-              <CardHeader>
-                <CardTitle className="text-white text-lg flex items-center gap-2">
-                  <Zap className="w-5 h-5 text-yellow-400" />
-                  UV Index
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-white mb-2">{weatherData.uvIndex}</div>
-                  <div className={`font-semibold ${getUVDesc(weatherData.uvIndex || 0).color}`}>
-                    {getUVDesc(weatherData.uvIndex || 0).desc}
-                  </div>
-                  <div className="w-full bg-white/20 rounded-full h-2 mt-3">
-                    <div 
-                      className="bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 h-2 rounded-full transition-all duration-500"
-                      style={{ width: `${Math.min((weatherData.uvIndex || 0) / 11 * 100, 100)}%` }}
-                    ></div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Weather Tips */}
-            <WeatherTips 
-              temperature={weatherData.temperature}
-              condition={weatherData.condition}
-              humidity={weatherData.humidity}
-              uvIndex={weatherData.uvIndex || 0}
-              windSpeed={weatherData.windSpeed}
-            />
-          </div>
-        )}
-
-        {/* Enhanced 5-Day Forecast with Beautiful Colors & Animations */}
-        {weatherData && (
-          <Card className="mt-6 glass-effect border-white/20 animate-slide-in overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm">
-              <CardTitle className="text-white text-xl flex items-center gap-2">
-                <TrendingUp className="w-6 h-6 text-white animate-pulse" />
-                5-Day Weather Forecast
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                {weatherData.forecast.map((day, index) => (
-                  <div
-                    key={index}
-                    className="group relative overflow-hidden rounded-xl p-5 bg-gradient-to-br from-blue-400/20 via-purple-400/20 to-pink-400/20 hover:from-blue-500/30 hover:via-purple-500/30 hover:to-pink-500/30 border border-white/30 hover:border-white/50 transition-all duration-500 hover:scale-105 hover:shadow-2xl weather-card cursor-pointer"
-                    style={{
-                      animationDelay: `${index * 100}ms`
-                    }}
-                  >
-                    {/* Animated background gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-transparent via-white/5 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    
-                    {/* Content */}
-                    <div className="relative z-10 text-center">
-                      <div className="text-white/90 font-medium text-sm mb-3 group-hover:text-white transition-colors">
-                        {day.date}
-                      </div>
-                      
-                      {/* Weather icon with animation */}
-                      <div className="flex justify-center mb-4 transform group-hover:scale-110 transition-transform duration-300">
-                        <div className="animate-float-slow group-hover:animate-pulse">
-                          {getWeatherIcon(day.condition)}
-                        </div>
-                      </div>
-                      
-                      {/* Temperature with gradient text */}
-                      <div className="text-2xl font-bold bg-gradient-to-r from-yellow-300 via-orange-300 to-red-300 bg-clip-text text-transparent group-hover:from-yellow-200 group-hover:via-orange-200 group-hover:to-red-200 transition-all duration-300 mb-2">
-                        {day.temperature}°
-                      </div>
-                      
-                      {/* Condition */}
-                      <div className="text-white/80 text-xs font-medium group-hover:text-white/90 transition-colors">
-                        {day.condition}
-                      </div>
-                      
-                      {/* Animated bottom border */}
-                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-                    </div>
-                    
-                    {/* Hover glow effect */}
-                    <div className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none bg-gradient-to-r from-blue-400/10 via-purple-400/10 to-pink-400/10 blur-xl"></div>
-                  </div>
-                ))}
-              </div>
-              
-              {/* Additional forecast info */}
-              <div className="mt-6 text-center">
-                <p className="text-white/70 text-sm">
-                  📊 Weather patterns updated every hour • 🎯 Accurate up to 5 days
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Loading State */}
-        {loading && !weatherData && (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-            <span className="ml-4 text-white text-lg drop-shadow-md">Loading weather data...</span>
-          </div>
+          <WeatherAnimations 
+            condition={weatherData.condition} 
+            intensity={weatherData.windSpeed > 20 ? 'heavy' : weatherData.windSpeed > 10 ? 'medium' : 'light'}
+          />
         )}
         
-        {/* Footer */}
-        <Footer />
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/30"></div>
+        
+        <div className="relative z-10 container mx-auto max-w-6xl p-4">
+          {/* Header */}
+          <div className="text-center mb-8 animate-fade-in">
+            <h1 className="text-4xl md:text-6xl font-bold text-slate-100 mb-4 animate-float drop-shadow-lg">
+              🌤️ Weather Bliss
+            </h1>
+            <p className="text-xl text-slate-200 mb-4 drop-shadow-md">
+              Beautiful weather insights for your world
+            </p>
+            <div className="flex items-center justify-center gap-2 text-slate-300">
+              <Clock className="w-5 h-5" />
+              <span>{currentTime.toLocaleString()}</span>
+            </div>
+          </div>
+
+          {/* Search Section */}
+          <Card className="mb-8 bg-slate-800/60 backdrop-blur-md border-slate-700/50 animate-slide-in relative overflow-visible">
+            <CardContent className="p-6">
+              <form onSubmit={handleSearch} className="flex flex-col gap-4">
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1 relative">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6 md:w-5 md:h-5 z-10" />
+                    {searchLocation && (
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          setSearchLocation('');
+                          setShowSuggestions(false);
+                          searchInputRef.current?.focus();
+                        }}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-1 h-auto bg-transparent hover:bg-slate-600 rounded-full transition-all duration-200"
+                      >
+                        <X className="w-5 h-5 text-slate-400 hover:text-slate-200" />
+                      </Button>
+                    )}
+                    <Input
+                      ref={searchInputRef}
+                      type="text"
+                      placeholder={placeholders[placeholderIndex]}
+                      value={searchLocation}
+                      onChange={(e) => handleSearchInput(e.target.value)}
+                      onFocus={() => searchLocation && setShowSuggestions(true)}
+                      className="pl-14 pr-12 md:pl-12 h-16 md:h-14 text-lg md:text-base bg-slate-700/60 border-slate-600/50 focus:bg-slate-700/80 text-slate-100 hover:bg-slate-700/70 transition-all duration-300 focus:shadow-xl focus:border-sky-400 rounded-xl placeholder:text-slate-400 placeholder:transition-all placeholder:duration-500"
+                      autoComplete="off"
+                    />
+                    
+                    {/* Search Suggestions - Properly positioned to avoid overlap */}
+                    {showSuggestions && searchSuggestions.length > 0 && (
+                      <>
+                        {/* Mobile overlay */}
+                        <div className="fixed inset-0 bg-black/50 z-[100] md:hidden" onClick={() => setShowSuggestions(false)}></div>
+                        
+                        {/* Search dropdown - positioned properly */}
+                        <div className="absolute top-full left-0 right-0 bg-slate-800 rounded-xl shadow-2xl mt-2 z-[101] max-h-[60vh] overflow-y-auto border border-slate-600 animate-fade-in">
+                          <div className="p-2">
+                            <div className="text-sm text-slate-400 px-3 py-2 border-b border-slate-600 bg-slate-700/50">
+                              ✨ Found {searchSuggestions.length} location{searchSuggestions.length !== 1 ? 's' : ''}
+                            </div>
+                            {searchSuggestions.map((suggestion, index) => (
+                              <button
+                                key={index}
+                                type="button"
+                                onClick={() => handleSuggestionSelect(suggestion)}
+                                className="w-full text-left px-4 py-4 md:py-3 hover:bg-slate-700/60 rounded-lg margin-1 flex items-center gap-3 transition-all duration-300 hover:shadow-md group"
+                              >
+                                <div className="p-2 bg-slate-700/60 rounded-lg group-hover:bg-sky-600/60 transition-all duration-300 group-hover:scale-110">
+                                  <MapPin className="w-5 h-5 md:w-4 md:h-4 text-sky-400 group-hover:text-sky-200 transition-colors" />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="font-semibold text-slate-100 text-base md:text-sm group-hover:text-white transition-colors">{suggestion.name}</div>
+                                  <div className="text-sm md:text-xs text-slate-400 group-hover:text-slate-300 transition-colors">
+                                    {suggestion.state && `${suggestion.state}, `}{suggestion.country}
+                                  </div>
+                                </div>
+                                <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                                  <ArrowRight className="w-5 h-5 text-sky-400 group-hover:scale-110" />
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <div className="flex gap-2 md:gap-4">
+                    <Button type="submit" disabled={loading} className="flex-1 md:flex-none h-12 md:h-10 bg-sky-600 hover:bg-sky-700 hover:shadow-lg transition-all duration-300 hover:scale-105 text-white">
+                      {loading ? <Loader2 className="w-5 h-5 md:w-4 md:h-4 animate-spin" /> : 'Search'}
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={handleCurrentLocation}
+                      disabled={loading}
+                      variant="outline"
+                      className="flex-1 md:flex-none h-12 md:h-10 bg-slate-700/60 border-slate-600/50 text-slate-200 hover:bg-slate-700/80 hover:shadow-lg transition-all duration-300 hover:scale-105"
+                    >
+                      {loading ? (
+                        <LoadingDots />
+                      ) : (
+                        <Navigation className="w-5 h-5 md:w-4 md:h-4 mr-2" />
+                      )}
+                      {loading ? 'Detecting...' : 'My Location'}
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* Search History and Favorite Locations */}
+                {(searchHistory.length > 0 || favoriteLocations.length > 0) && (
+                  <div className="space-y-2">
+                    {searchHistory.length > 0 && (
+                      <div className="flex gap-2 flex-wrap">
+                        <span className="text-slate-300 text-sm">Recent searches:</span>
+                        {searchHistory.map((search, index) => (
+                          <Badge
+                            key={index}
+                            variant="outline"
+                            className="cursor-pointer hover:bg-slate-700/60 bg-slate-700/30 text-slate-200 border-slate-600/50"
+                            onClick={() => setSearchLocation(search)}
+                          >
+                            <Clock className="w-3 h-3 mr-1" />
+                            {search}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {favoriteLocations.length > 0 && (
+                      <div className="flex gap-2 flex-wrap">
+                        <span className="text-slate-300 text-sm">Favorite locations:</span>
+                        {favoriteLocations.map((location, index) => (
+                          <Badge
+                            key={index}
+                            variant="secondary"
+                            className="cursor-pointer hover:bg-slate-600/60 bg-slate-700/40 text-slate-200 border-slate-600/50"
+                            onClick={() => fetchWeatherByLocation(location)}
+                          >
+                            <Star className="w-3 h-3 mr-1" />
+                            {location.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </form>
+            </CardContent>
+          </Card>
+
+          {/* Main Weather Display */}
+          {weatherData && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
+              {/* Current Weather - Main Card */}
+              <Card className="lg:col-span-2 bg-slate-800/60 backdrop-blur-md border-slate-700/50 weather-card">
+                <CardHeader className="text-center">
+                  <CardTitle className="text-2xl font-bold text-slate-100 flex items-center justify-center gap-2">
+                    <MapPin className="w-6 h-6 text-sky-400" />
+                    {weatherData.location}
+                    {weatherData.country && (
+                      <Badge variant="outline" className="bg-slate-700/60 text-slate-200 border-slate-600/50">
+                        {weatherData.country}
+                      </Badge>
+                    )}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-center">
+                  <div className="flex items-center justify-center mb-6 animate-float">
+                    {getWeatherIcon(weatherData.condition)}
+                  </div>
+                  <div className="text-6xl font-bold text-slate-100 mb-2 animate-pulse-glow drop-shadow-lg">
+                    {weatherData.temperature}°C
+                  </div>
+                  <div className="text-slate-200 text-lg mb-2 capitalize drop-shadow-md">
+                    {weatherData.description}
+                  </div>
+                  <div className="text-slate-300">
+                    Feels like {weatherData.feelsLike}°C
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Weather Details */}
+              <Card className="bg-slate-800/60 backdrop-blur-md border-slate-700/50 weather-card">
+                <CardHeader>
+                  <CardTitle className="text-slate-100 text-lg">Weather Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex items-center justify-between text-slate-200">
+                    <div className="flex items-center gap-2">
+                      <Droplets className="w-4 h-4 text-blue-400" />
+                      <span className="text-sm">Humidity</span>
+                    </div>
+                    <span className="font-semibold">{weatherData.humidity}%</span>
+                  </div>
+                  <div className="flex items-center justify-between text-slate-200">
+                    <div className="flex items-center gap-2">
+                      <Wind className="w-4 h-4 text-slate-400" />
+                      <span className="text-sm">Wind Speed</span>
+                    </div>
+                    <span className="font-semibold">{weatherData.windSpeed} km/h</span>
+                  </div>
+                  <div className="flex items-center justify-between text-slate-200">
+                    <div className="flex items-center gap-2">
+                      <Eye className="w-4 h-4 text-yellow-400" />
+                      <span className="text-sm">Visibility</span>
+                    </div>
+                    <span className="font-semibold">{weatherData.visibility} km</span>
+                  </div>
+                  <div className="flex items-center justify-between text-slate-200">
+                    <div className="flex items-center gap-2">
+                      <Thermometer className="w-4 h-4 text-cyan-400" />
+                      <span className="text-sm">Dew Point</span>
+                    </div>
+                    <span className="font-semibold">{weatherData.dewPoint}°C</span>
+                  </div>
+                  <div className="flex items-center justify-between text-slate-200">
+                    <div className="flex items-center gap-2">
+                      <Gauge className="w-4 h-4 text-purple-400" />
+                      <span className="text-sm">Pressure</span>
+                    </div>
+                    <span className="font-semibold">{weatherData.pressure} hPa</span>
+                  </div>
+                  <div className="flex items-center justify-between text-slate-200">
+                    <div className="flex items-center gap-2">
+                      <Sunrise className="w-4 h-4 text-orange-400" />
+                      <span className="text-sm">Sunrise</span>
+                    </div>
+                    <span className="font-semibold">{weatherData.sunrise}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-slate-200">
+                    <div className="flex items-center gap-2">
+                      <Sunset className="w-4 h-4 text-orange-500" />
+                      <span className="text-sm">Sunset</span>
+                    </div>
+                    <span className="font-semibold">{weatherData.sunset}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Enhanced Air Quality & UV Index Cards */}
+          {weatherData && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 animate-slide-in">
+              {/* Air Quality Index */}
+              <Card className="bg-slate-800/60 backdrop-blur-md border-slate-700/50 weather-card">
+                <CardHeader>
+                  <CardTitle className="text-slate-100 text-lg flex items-center gap-2">
+                    <Heart className="w-5 h-5 text-pink-400" />
+                    Air Quality
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-slate-100 mb-2">{weatherData.airQuality}</div>
+                    <div className={`font-semibold ${getAirQualityDesc(weatherData.airQuality || 0).color}`}>
+                      {getAirQualityDesc(weatherData.airQuality || 0).desc}
+                    </div>
+                    <div className="w-full bg-slate-700/50 rounded-full h-2 mt-3">
+                      <div 
+                        className="bg-gradient-to-r from-green-400 to-red-400 h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${Math.min((weatherData.airQuality || 0) / 200 * 100, 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* UV Index */}
+              <Card className="bg-slate-800/60 backdrop-blur-md border-slate-700/50 weather-card">
+                <CardHeader>
+                  <CardTitle className="text-slate-100 text-lg flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-yellow-400" />
+                    UV Index
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-slate-100 mb-2">{weatherData.uvIndex}</div>
+                    <div className={`font-semibold ${getUVDesc(weatherData.uvIndex || 0).color}`}>
+                      {getUVDesc(weatherData.uvIndex || 0).desc}
+                    </div>
+                    <div className="w-full bg-slate-700/50 rounded-full h-2 mt-3">
+                      <div 
+                        className="bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 h-2 rounded-full transition-all duration-500"
+                        style={{ width: `${Math.min((weatherData.uvIndex || 0) / 11 * 100, 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Weather Tips */}
+              <WeatherTips 
+                temperature={weatherData.temperature}
+                condition={weatherData.condition}
+                humidity={weatherData.humidity}
+                uvIndex={weatherData.uvIndex || 0}
+                windSpeed={weatherData.windSpeed}
+              />
+            </div>
+          )}
+
+          {/* 5-Day Forecast */}
+          {weatherData && (
+            <div className="mt-6 animate-slide-in">
+              <div className="bg-slate-800/60 backdrop-blur-md rounded-xl p-6 border border-slate-700/50 shadow-lg">
+                <h3 className="text-xl font-semibold text-slate-100 mb-4 flex items-center">
+                  <Calendar className="w-5 h-5 mr-2 text-sky-400" />
+                  5-Day Forecast
+                </h3>
+                <div className="space-y-3">
+                  {weatherData.forecast.map((day, index) => (
+                    <div key={index} className="flex items-center justify-between p-4 bg-slate-700/40 hover:bg-slate-700/60 rounded-lg border border-slate-600/50 transition-all duration-200">
+                      <div className="flex items-center space-x-4">
+                        <span className="text-slate-200 font-medium w-12 text-sm">{day.date.split(',')[0]}</span>
+                        <div className="text-2xl">{getWeatherIcon(day.condition)}</div>
+                        <span className="text-slate-300">{day.condition}</span>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-slate-100 font-semibold">{day.temperature}°C</div>
+                        <div className="text-slate-400 text-sm">{Math.round(day.temperature - 5)}°C</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Loading State */}
+          {loading && !weatherData && (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-200"></div>
+              <span className="ml-4 text-slate-200 text-lg drop-shadow-md">Loading weather data...</span>
+            </div>
+          )}
+        </div>
       </div>
+      
+      {/* Footer */}
+      <WeatherFooter />
     </div>
   );
 };
