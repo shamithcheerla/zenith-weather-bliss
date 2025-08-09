@@ -46,13 +46,13 @@ const Home = () => {
           gyroControls: false,
           minHeight: 200.00,
           minWidth: 200.00,
-          skyColor: 0x1e293b,
-          cloudColor: 0x475569,
-          cloudShadowColor: 0x0f172a,
-          sunColor: 0x272700,
-          sunGlareColor: 0xcc8100,
-          sunlightColor: 0x3a2d3b,
-          speed: 3.00
+          skyColor: 0x87CEEB,
+          cloudColor: 0xFFFFFF,
+          cloudShadowColor: 0xE6E6FA,
+          sunColor: 0xFFD700,
+          sunGlareColor: 0xFFA500,
+          sunlightColor: 0xFFE5B4,
+          speed: 2.00
         });
       }
     };
@@ -72,22 +72,27 @@ const Home = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Vanta Background */}
-      <div ref={vantaRef} className="absolute inset-0 z-0" />
+      {/* Vanta Background - Fixed responsive sizing */}
+      <div ref={vantaRef} className="fixed inset-0 w-full h-full z-0" style={{ minHeight: '100vh', minWidth: '100vw' }} />
       
       {/* Content Overlay */}
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Navigation */}
-        <nav className="p-6 bg-slate-900/40 backdrop-blur-md border-b border-slate-700/50">
+        <nav className="p-6 bg-white/20 backdrop-blur-md border-b border-blue-200/30">
           <div className="container mx-auto flex justify-between items-center">
             <div className="flex items-center space-x-3">
-              <Cloud className="w-10 h-10 text-sky-400" />
-              <span className="text-3xl font-bold bg-gradient-to-r from-sky-400 to-blue-400 bg-clip-text text-transparent">Weather Bliss</span>
+              <Cloud className="w-10 h-10 text-blue-600" />
+              <span className="text-3xl font-bold text-slate-800">Weather Bliss</span>
             </div>
             <div className="hidden md:flex space-x-8">
-              <a href="#features" className="text-slate-200 hover:text-sky-400 transition-colors font-medium">Features</a>
-              <a href="#about" className="text-slate-200 hover:text-sky-400 transition-colors font-medium">About</a>
-              <a href="#contact" className="text-slate-200 hover:text-sky-400 transition-colors font-medium">Contact</a>
+              <a href="#features" className="text-slate-700 hover:text-blue-600 transition-colors font-medium">Features</a>
+              <a href="#about" className="text-slate-700 hover:text-blue-600 transition-colors font-medium">About</a>
+              <button 
+                onClick={() => navigate('/contact')} 
+                className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
+              >
+                Contact
+              </button>
             </div>
           </div>
         </nav>
@@ -95,32 +100,32 @@ const Home = () => {
         {/* Hero Section */}
         <main className="flex-1 flex items-center justify-center px-6">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent mb-6 animate-fade-in">
+            <h1 className="text-6xl md:text-8xl font-bold text-slate-800 mb-6 animate-fade-in">
               Weather Bliss
             </h1>
-            <p className="text-xl md:text-2xl text-slate-200 mb-8 animate-slide-in">
+            <p className="text-xl md:text-2xl text-slate-700 mb-8 animate-slide-in">
               Experience beautiful weather insights with stunning 3D animations
             </p>
-            <p className="text-lg text-slate-300 mb-12 max-w-2xl mx-auto animate-fade-in">
+            <p className="text-lg text-slate-600 mb-12 max-w-2xl mx-auto animate-fade-in">
               Get real-time weather data, forecasts, and personalized insights in a visually stunning interface that adapts to your local weather conditions.
             </p>
             
             {/* Feature Cards */}
             <div className="grid md:grid-cols-3 gap-6 mb-12">
-              <div className="bg-slate-800/60 backdrop-blur-md border border-slate-700/50 p-6 rounded-xl hover:bg-slate-800/80 transition-all duration-300 animate-scale-in">
-                <MapPin className="w-12 h-12 mx-auto mb-4 text-sky-400" />
-                <h3 className="text-xl font-semibold mb-2 text-slate-100">Location-Based</h3>
-                <p className="text-slate-300">Automatic location detection with global weather coverage</p>
+              <div className="bg-white/80 backdrop-blur-md border border-blue-200/50 p-6 rounded-xl hover:bg-white/90 transition-all duration-300 animate-scale-in shadow-lg">
+                <MapPin className="w-12 h-12 mx-auto mb-4 text-blue-600" />
+                <h3 className="text-xl font-semibold mb-2 text-slate-800">Location-Based</h3>
+                <p className="text-slate-600">Automatic location detection with global weather coverage</p>
               </div>
-              <div className="bg-slate-800/60 backdrop-blur-md border border-slate-700/50 p-6 rounded-xl hover:bg-slate-800/80 transition-all duration-300 animate-scale-in" style={{ animationDelay: '0.2s' }}>
-                <Thermometer className="w-12 h-12 mx-auto mb-4 text-orange-400" />
-                <h3 className="text-xl font-semibold mb-2 text-slate-100">Detailed Insights</h3>
-                <p className="text-slate-300">Comprehensive weather data including UV index, air quality, and more</p>
+              <div className="bg-white/80 backdrop-blur-md border border-blue-200/50 p-6 rounded-xl hover:bg-white/90 transition-all duration-300 animate-scale-in shadow-lg" style={{ animationDelay: '0.2s' }}>
+                <Thermometer className="w-12 h-12 mx-auto mb-4 text-orange-500" />
+                <h3 className="text-xl font-semibold mb-2 text-slate-800">Detailed Insights</h3>
+                <p className="text-slate-600">Comprehensive weather data including UV index, air quality, and more</p>
               </div>
-              <div className="bg-slate-800/60 backdrop-blur-md border border-slate-700/50 p-6 rounded-xl hover:bg-slate-800/80 transition-all duration-300 animate-scale-in" style={{ animationDelay: '0.4s' }}>
-                <Wind className="w-12 h-12 mx-auto mb-4 text-cyan-400" />
-                <h3 className="text-xl font-semibold mb-2 text-slate-100">Dynamic Animations</h3>
-                <p className="text-slate-300">Beautiful weather animations that match current conditions</p>
+              <div className="bg-white/80 backdrop-blur-md border border-blue-200/50 p-6 rounded-xl hover:bg-white/90 transition-all duration-300 animate-scale-in shadow-lg" style={{ animationDelay: '0.4s' }}>
+                <Wind className="w-12 h-12 mx-auto mb-4 text-cyan-600" />
+                <h3 className="text-xl font-semibold mb-2 text-slate-800">Dynamic Animations</h3>
+                <p className="text-slate-600">Beautiful weather animations that match current conditions</p>
               </div>
             </div>
 
@@ -135,75 +140,53 @@ const Home = () => {
           </div>
         </main>
 
-        {/* Footer */}
-        <footer className="bg-slate-900/80 backdrop-blur-md border-t border-slate-700/50 mt-16">
-          <div className="container mx-auto px-6 py-12">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        {/* Simplified Footer */}
+        <footer className="bg-white/20 backdrop-blur-md border-t border-blue-200/30 mt-16">
+          <div className="container mx-auto px-6 py-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               {/* Brand Section */}
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div className="flex items-center space-x-2">
-                  <Cloud className="w-8 h-8 text-sky-400" />
-                  <span className="text-2xl font-bold text-slate-100">Weather Bliss</span>
+                  <Cloud className="w-6 h-6 text-blue-600" />
+                  <span className="text-lg font-bold text-slate-800">Weather Bliss</span>
                 </div>
-                <p className="text-slate-300 leading-relaxed">
-                  Beautiful weather insights for your world with stunning animations and comprehensive data visualization.
+                <p className="text-slate-600 text-sm leading-relaxed">
+                  Beautiful weather insights with comprehensive data visualization.
                 </p>
               </div>
 
-              {/* Features Section */}
-              <div className="space-y-4">
-                <h3 className="text-slate-100 font-semibold text-lg">Features</h3>
-                <ul className="space-y-2">
-                  <li className="text-slate-300 hover:text-sky-400 transition-colors cursor-pointer">Real-time Weather</li>
-                  <li className="text-slate-300 hover:text-sky-400 transition-colors cursor-pointer">5-Day Forecasts</li>
-                  <li className="text-slate-300 hover:text-sky-400 transition-colors cursor-pointer">Weather Animations</li>
-                  <li className="text-slate-300 hover:text-sky-400 transition-colors cursor-pointer">Location Detection</li>
-                  <li className="text-slate-300 hover:text-sky-400 transition-colors cursor-pointer">Weather Tips</li>
+              {/* Quick Links */}
+              <div className="space-y-3">
+                <h3 className="text-slate-800 font-semibold">Quick Links</h3>
+                <ul className="space-y-1 text-sm">
+                  <li><button onClick={() => navigate('/weather')} className="text-slate-600 hover:text-blue-600 transition-colors">Weather Data</button></li>
+                  <li className="text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Features</li>
+                  <li className="text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">About</li>
                 </ul>
               </div>
 
-              {/* Documentation Section */}
-              <div className="space-y-4">
-                <h3 className="text-slate-100 font-semibold text-lg">Documentation</h3>
-                <ul className="space-y-2">
-                  <li className="text-slate-300 hover:text-sky-400 transition-colors cursor-pointer">API Reference</li>
-                  <li className="text-slate-300 hover:text-sky-400 transition-colors cursor-pointer">User Guide</li>
-                  <li className="text-slate-300 hover:text-sky-400 transition-colors cursor-pointer">Developer Docs</li>
-                  <li className="text-slate-300 hover:text-sky-400 transition-colors cursor-pointer">Weather Data Sources</li>
-                  <li className="text-slate-300 hover:text-sky-400 transition-colors cursor-pointer">FAQ</li>
-                </ul>
-              </div>
-
-              {/* Contact Section */}
-              <div className="space-y-4">
-                <h3 className="text-slate-100 font-semibold text-lg">Contact Us</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-slate-300">support@weatherbliss.com</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <span className="text-slate-300">+1 (555) 123-4567</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <span className="text-slate-300">San Francisco, CA</span>
-                  </div>
+              {/* Contact */}
+              <div className="space-y-3">
+                <h3 className="text-slate-800 font-semibold">Contact</h3>
+                <div className="text-sm space-y-1">
+                  <p className="text-slate-600">support@weatherbliss.com</p>
+                  <button 
+                    onClick={() => navigate('/contact')}
+                    className="text-blue-600 hover:text-blue-700 transition-colors"
+                  >
+                    Contact Us
+                  </button>
                 </div>
               </div>
             </div>
 
             {/* Bottom Section */}
-            <div className="border-t border-slate-700/50 pt-8">
-              <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                <div className="text-slate-400 text-center md:text-left">
-                  <p>&copy; 2024 Weather Bliss. All rights reserved.</p>
-                </div>
-                <div className="flex items-center space-x-2 text-slate-400">
-                  <span>Made with ❤️ for weather enthusiasts</span>
-                </div>
-                <div className="flex space-x-6 text-sm">
-                  <span className="text-slate-400 hover:text-sky-400 transition-colors cursor-pointer">Privacy Policy</span>
-                  <span className="text-slate-400 hover:text-sky-400 transition-colors cursor-pointer">Terms of Service</span>
-                  <span className="text-slate-400 hover:text-sky-400 transition-colors cursor-pointer">About</span>
+            <div className="border-t border-blue-200/30 pt-4">
+              <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
+                <p className="text-slate-600 text-sm">&copy; 2024 Weather Bliss. All rights reserved.</p>
+                <div className="flex space-x-4 text-xs">
+                  <span className="text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Privacy</span>
+                  <span className="text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Terms</span>
                 </div>
               </div>
             </div>

@@ -358,10 +358,19 @@ const EnhancedWeatherDashboard = () => {
   const backgroundImage = weatherData ? getBackgroundImage(weatherData.condition, getTimeOfDay()) : sunnySkyBg;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col relative overflow-hidden">
-      {/* Responsive background decorative elements */}
-      <div className="absolute inset-0 opacity-40" style={{backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cg fill=\"none\" fill-rule=\"evenodd\"%3E%3Cg fill=\"%23ffffff\" fill-opacity=\"0.05\"%3E%3Ccircle cx=\"30\" cy=\"30\" r=\"1\"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')"}}></div>
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-sky-900/20 to-blue-900/20"></div>
+    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-blue-50 to-indigo-100 flex flex-col relative overflow-hidden">
+      {/* Responsive cloud background */}
+      <div 
+        className="fixed inset-0 w-full h-full opacity-30 z-0" 
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%23ffffff' fill-opacity='0.3'%3E%3Cpath d='M25 40c0-13.8 11.2-25 25-25s25 11.2 25 25c0 1.5-.1 3-.3 4.4 8.3 2.7 14.3 10.4 14.3 19.6 0 11.3-9.2 20.5-20.5 20.5H31c-11.3 0-20.5-9.2-20.5-20.5 0-9.2 6-17 14.3-19.6-.2-1.4-.3-2.9-.3-4.4z'/%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundSize: '200px 150px',
+          backgroundRepeat: 'repeat',
+          minHeight: '100vh',
+          minWidth: '100vw'
+        }}
+      ></div>
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-sky-200/10 to-blue-200/10"></div>
       
       <div className="flex-1 relative">
         {/* Weather Animations */}
@@ -375,28 +384,28 @@ const EnhancedWeatherDashboard = () => {
         {/* Overlay for better text readability */}
         <div className="absolute inset-0 bg-black/30"></div>
         
-        <div className="relative z-10 container mx-auto max-w-6xl p-4">
+        <div className="relative z-10 container mx-auto max-w-7xl p-4">
           {/* Header */}
           <div className="text-center mb-8 animate-fade-in">
-            <h1 className="text-4xl md:text-6xl font-bold text-slate-100 mb-4 animate-float drop-shadow-lg">
+            <h1 className="text-4xl md:text-6xl font-bold text-slate-800 mb-4 animate-float drop-shadow-lg">
               🌤️ Weather Bliss
             </h1>
-            <p className="text-xl text-slate-200 mb-4 drop-shadow-md">
+            <p className="text-xl text-slate-700 mb-4 drop-shadow-md">
               Beautiful weather insights for your world
             </p>
-            <div className="flex items-center justify-center gap-2 text-slate-300">
+            <div className="flex items-center justify-center gap-2 text-slate-600">
               <Clock className="w-5 h-5" />
               <span>{currentTime.toLocaleString()}</span>
             </div>
           </div>
 
           {/* Search Section */}
-          <Card className="mb-8 bg-slate-800/60 backdrop-blur-md border-slate-700/50 animate-slide-in relative overflow-visible">
+          <Card className="mb-8 bg-white/80 backdrop-blur-md border-blue-200/50 animate-slide-in relative overflow-visible shadow-lg">
             <CardContent className="p-6">
               <form onSubmit={handleSearch} className="flex flex-col gap-4">
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-1 relative">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400 w-6 h-6 md:w-5 md:h-5 z-10" />
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 w-6 h-6 md:w-5 md:h-5 z-10" />
                     {searchLocation && (
                       <Button
                         type="button"
@@ -407,7 +416,7 @@ const EnhancedWeatherDashboard = () => {
                         }}
                         className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-1 h-auto bg-transparent hover:bg-slate-600 rounded-full transition-all duration-200"
                       >
-                        <X className="w-5 h-5 text-slate-400 hover:text-slate-200" />
+                        <X className="w-5 h-5 text-slate-500 hover:text-slate-700" />
                       </Button>
                     )}
                     <Input
@@ -417,7 +426,7 @@ const EnhancedWeatherDashboard = () => {
                       value={searchLocation}
                       onChange={(e) => handleSearchInput(e.target.value)}
                       onFocus={() => searchLocation && setShowSuggestions(true)}
-                      className="pl-14 pr-12 md:pl-12 h-16 md:h-14 text-lg md:text-base bg-slate-700/60 border-slate-600/50 focus:bg-slate-700/80 text-slate-100 hover:bg-slate-700/70 transition-all duration-300 focus:shadow-xl focus:border-sky-400 rounded-xl placeholder:text-slate-400 placeholder:transition-all placeholder:duration-500"
+                      className="pl-14 pr-12 md:pl-12 h-16 md:h-14 text-lg md:text-base bg-white/70 border-blue-200/50 focus:bg-white/90 text-slate-800 hover:bg-white/80 transition-all duration-300 focus:shadow-xl focus:border-blue-400 rounded-xl placeholder:text-slate-500 placeholder:transition-all placeholder:duration-500"
                       autoComplete="off"
                     />
                     
@@ -428,7 +437,7 @@ const EnhancedWeatherDashboard = () => {
                         <div className="fixed inset-0 bg-black/50 z-[100] md:hidden" onClick={() => setShowSuggestions(false)}></div>
                         
                         {/* Search dropdown - positioned properly */}
-                        <div className="absolute top-full left-0 right-0 bg-slate-800 rounded-xl shadow-2xl mt-2 z-[101] max-h-[60vh] overflow-y-auto border border-slate-600 animate-fade-in">
+                        <div className="absolute top-full left-0 right-0 bg-white rounded-xl shadow-2xl mt-2 z-[101] max-h-[60vh] overflow-y-auto border border-blue-200 animate-fade-in">
                           <div className="p-2">
                             <div className="text-sm text-slate-400 px-3 py-2 border-b border-slate-600 bg-slate-700/50">
                               ✨ Found {searchSuggestions.length} location{searchSuggestions.length !== 1 ? 's' : ''}
@@ -526,13 +535,13 @@ const EnhancedWeatherDashboard = () => {
           {weatherData && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
               {/* Current Weather - Main Card */}
-              <Card className="lg:col-span-2 bg-slate-800/60 backdrop-blur-md border-slate-700/50 weather-card">
+              <Card className="lg:col-span-2 bg-white/90 backdrop-blur-md border-blue-200/50 weather-card shadow-lg">
                 <CardHeader className="text-center">
-                  <CardTitle className="text-2xl font-bold text-slate-100 flex items-center justify-center gap-2">
-                    <MapPin className="w-6 h-6 text-sky-400" />
+                  <CardTitle className="text-2xl font-bold text-slate-800 flex items-center justify-center gap-2">
+                    <MapPin className="w-6 h-6 text-blue-600" />
                     {weatherData.location}
                     {weatherData.country && (
-                      <Badge variant="outline" className="bg-slate-700/60 text-slate-200 border-slate-600/50">
+                      <Badge variant="outline" className="bg-blue-100 text-blue-700 border-blue-300">
                         {weatherData.country}
                       </Badge>
                     )}
@@ -542,69 +551,69 @@ const EnhancedWeatherDashboard = () => {
                   <div className="flex items-center justify-center mb-6 animate-float">
                     {getWeatherIcon(weatherData.condition)}
                   </div>
-                  <div className="text-6xl font-bold text-slate-100 mb-2 animate-pulse-glow drop-shadow-lg">
+                  <div className="text-6xl font-bold text-slate-800 mb-2 animate-pulse-glow drop-shadow-lg">
                     {weatherData.temperature}°C
                   </div>
-                  <div className="text-slate-200 text-lg mb-2 capitalize drop-shadow-md">
+                  <div className="text-slate-700 text-lg mb-2 capitalize drop-shadow-md">
                     {weatherData.description}
                   </div>
-                  <div className="text-slate-300">
+                  <div className="text-slate-600">
                     Feels like {weatherData.feelsLike}°C
                   </div>
                 </CardContent>
               </Card>
 
               {/* Weather Details */}
-              <Card className="bg-slate-800/60 backdrop-blur-md border-slate-700/50 weather-card">
+              <Card className="bg-white/90 backdrop-blur-md border-blue-200/50 weather-card shadow-lg">
                 <CardHeader>
-                  <CardTitle className="text-slate-100 text-lg">Weather Details</CardTitle>
+                  <CardTitle className="text-slate-800 text-lg">Weather Details</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="flex items-center justify-between text-slate-200">
+                  <div className="flex items-center justify-between text-slate-700">
                     <div className="flex items-center gap-2">
-                      <Droplets className="w-4 h-4 text-blue-400" />
+                      <Droplets className="w-4 h-4 text-blue-500" />
                       <span className="text-sm">Humidity</span>
                     </div>
                     <span className="font-semibold">{weatherData.humidity}%</span>
                   </div>
-                  <div className="flex items-center justify-between text-slate-200">
+                  <div className="flex items-center justify-between text-slate-700">
                     <div className="flex items-center gap-2">
-                      <Wind className="w-4 h-4 text-slate-400" />
+                      <Wind className="w-4 h-4 text-slate-600" />
                       <span className="text-sm">Wind Speed</span>
                     </div>
                     <span className="font-semibold">{weatherData.windSpeed} km/h</span>
                   </div>
-                  <div className="flex items-center justify-between text-slate-200">
+                  <div className="flex items-center justify-between text-slate-700">
                     <div className="flex items-center gap-2">
-                      <Eye className="w-4 h-4 text-yellow-400" />
+                      <Eye className="w-4 h-4 text-yellow-500" />
                       <span className="text-sm">Visibility</span>
                     </div>
                     <span className="font-semibold">{weatherData.visibility} km</span>
                   </div>
-                  <div className="flex items-center justify-between text-slate-200">
+                  <div className="flex items-center justify-between text-slate-700">
                     <div className="flex items-center gap-2">
-                      <Thermometer className="w-4 h-4 text-cyan-400" />
+                      <Thermometer className="w-4 h-4 text-cyan-500" />
                       <span className="text-sm">Dew Point</span>
                     </div>
                     <span className="font-semibold">{weatherData.dewPoint}°C</span>
                   </div>
-                  <div className="flex items-center justify-between text-slate-200">
+                  <div className="flex items-center justify-between text-slate-700">
                     <div className="flex items-center gap-2">
-                      <Gauge className="w-4 h-4 text-purple-400" />
+                      <Gauge className="w-4 h-4 text-purple-500" />
                       <span className="text-sm">Pressure</span>
                     </div>
                     <span className="font-semibold">{weatherData.pressure} hPa</span>
                   </div>
-                  <div className="flex items-center justify-between text-slate-200">
+                  <div className="flex items-center justify-between text-slate-700">
                     <div className="flex items-center gap-2">
-                      <Sunrise className="w-4 h-4 text-orange-400" />
+                      <Sunrise className="w-4 h-4 text-orange-500" />
                       <span className="text-sm">Sunrise</span>
                     </div>
                     <span className="font-semibold">{weatherData.sunrise}</span>
                   </div>
-                  <div className="flex items-center justify-between text-slate-200">
+                  <div className="flex items-center justify-between text-slate-700">
                     <div className="flex items-center gap-2">
-                      <Sunset className="w-4 h-4 text-orange-500" />
+                      <Sunset className="w-4 h-4 text-orange-600" />
                       <span className="text-sm">Sunset</span>
                     </div>
                     <span className="font-semibold">{weatherData.sunset}</span>
@@ -618,20 +627,20 @@ const EnhancedWeatherDashboard = () => {
           {weatherData && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 animate-slide-in">
               {/* Air Quality Index */}
-              <Card className="bg-slate-800/60 backdrop-blur-md border-slate-700/50 weather-card">
+              <Card className="bg-white/90 backdrop-blur-md border-blue-200/50 weather-card shadow-lg">
                 <CardHeader>
-                  <CardTitle className="text-slate-100 text-lg flex items-center gap-2">
-                    <Heart className="w-5 h-5 text-pink-400" />
+                  <CardTitle className="text-slate-800 text-lg flex items-center gap-2">
+                    <Heart className="w-5 h-5 text-pink-500" />
                     Air Quality
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-slate-100 mb-2">{weatherData.airQuality}</div>
+                    <div className="text-3xl font-bold text-slate-800 mb-2">{weatherData.airQuality}</div>
                     <div className={`font-semibold ${getAirQualityDesc(weatherData.airQuality || 0).color}`}>
                       {getAirQualityDesc(weatherData.airQuality || 0).desc}
                     </div>
-                    <div className="w-full bg-slate-700/50 rounded-full h-2 mt-3">
+                    <div className="w-full bg-slate-200 rounded-full h-2 mt-3">
                       <div 
                         className="bg-gradient-to-r from-green-400 to-red-400 h-2 rounded-full transition-all duration-500"
                         style={{ width: `${Math.min((weatherData.airQuality || 0) / 200 * 100, 100)}%` }}
@@ -642,20 +651,20 @@ const EnhancedWeatherDashboard = () => {
               </Card>
 
               {/* UV Index */}
-              <Card className="bg-slate-800/60 backdrop-blur-md border-slate-700/50 weather-card">
+              <Card className="bg-white/90 backdrop-blur-md border-blue-200/50 weather-card shadow-lg">
                 <CardHeader>
-                  <CardTitle className="text-slate-100 text-lg flex items-center gap-2">
-                    <Zap className="w-5 h-5 text-yellow-400" />
+                  <CardTitle className="text-slate-800 text-lg flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-yellow-500" />
                     UV Index
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-slate-100 mb-2">{weatherData.uvIndex}</div>
+                    <div className="text-3xl font-bold text-slate-800 mb-2">{weatherData.uvIndex}</div>
                     <div className={`font-semibold ${getUVDesc(weatherData.uvIndex || 0).color}`}>
                       {getUVDesc(weatherData.uvIndex || 0).desc}
                     </div>
-                    <div className="w-full bg-slate-700/50 rounded-full h-2 mt-3">
+                    <div className="w-full bg-slate-200 rounded-full h-2 mt-3">
                       <div 
                         className="bg-gradient-to-r from-green-400 via-yellow-400 to-red-400 h-2 rounded-full transition-all duration-500"
                         style={{ width: `${Math.min((weatherData.uvIndex || 0) / 11 * 100, 100)}%` }}
@@ -679,22 +688,22 @@ const EnhancedWeatherDashboard = () => {
           {/* 5-Day Forecast */}
           {weatherData && (
             <div className="mt-6 animate-slide-in">
-              <div className="bg-slate-800/60 backdrop-blur-md rounded-xl p-6 border border-slate-700/50 shadow-lg">
-                <h3 className="text-xl font-semibold text-slate-100 mb-4 flex items-center">
-                  <Calendar className="w-5 h-5 mr-2 text-sky-400" />
+              <div className="bg-white/90 backdrop-blur-md rounded-xl p-6 border border-blue-200/50 shadow-lg">
+                <h3 className="text-xl font-semibold text-slate-800 mb-4 flex items-center">
+                  <Calendar className="w-5 h-5 mr-2 text-blue-600" />
                   5-Day Forecast
                 </h3>
                 <div className="space-y-3">
                   {weatherData.forecast.map((day, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 bg-slate-700/40 hover:bg-slate-700/60 rounded-lg border border-slate-600/50 transition-all duration-200">
+                    <div key={index} className="flex items-center justify-between p-4 bg-blue-50/60 hover:bg-blue-100/80 rounded-lg border border-blue-200/30 transition-all duration-200 shadow-sm">
                       <div className="flex items-center space-x-4">
-                        <span className="text-slate-200 font-medium w-12 text-sm">{day.date.split(',')[0]}</span>
+                        <span className="text-slate-700 font-medium w-12 text-sm">{day.date.split(',')[0]}</span>
                         <div className="text-2xl">{getWeatherIcon(day.condition)}</div>
-                        <span className="text-slate-300">{day.condition}</span>
+                        <span className="text-slate-700">{day.condition}</span>
                       </div>
                       <div className="text-right">
-                        <div className="text-slate-100 font-semibold">{day.temperature}°C</div>
-                        <div className="text-slate-400 text-sm">{Math.round(day.temperature - 5)}°C</div>
+                        <div className="text-slate-800 font-semibold">{day.temperature}°C</div>
+                        <div className="text-slate-600 text-sm">{Math.round(day.temperature - 5)}°C</div>
                       </div>
                     </div>
                   ))}
