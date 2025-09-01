@@ -37,31 +37,64 @@ const Home = () => {
         vantaScript.onload = resolve;
       });
 
-      // Initialize Vanta effect
-      if (vantaRef.current && window.VANTA) {
-        vantaEffect.current = window.VANTA.CLOUDS({
-          el: vantaRef.current,
-          mouseControls: true,
-          touchControls: true,
-          gyroControls: false,
-          minHeight: 200.00,
-          minWidth: 200.00,
-          skyColor: 0x87CEEB,
-          cloudColor: 0xFFFFFF,
-          cloudShadowColor: 0xE6E6FA,
-          sunColor: 0xFFD700,
-          sunGlareColor: 0xFFA500,
-          sunlightColor: 0xFFE5B4,
-          speed: 2.00
-        });
-      }
+      // Initialize Vanta effect with responsive configuration
+      const initVanta = () => {
+        if (vantaRef.current && window.VANTA) {
+          // Destroy existing effect before creating new one
+          if (vantaEffect.current) {
+            vantaEffect.current.destroy();
+          }
+          
+          vantaEffect.current = window.VANTA.CLOUDS({
+            el: vantaRef.current,
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: Math.max(window.innerHeight, 400),
+            minWidth: Math.max(window.innerWidth, 300),
+            scale: 1.0,
+            scaleMobile: 1.0,
+            skyColor: 0x87CEEB,
+            cloudColor: 0xFFFFFF,
+            cloudShadowColor: 0xE6E6FA,
+            sunColor: 0xFFD700,
+            sunGlareColor: 0xFFA500,
+            sunlightColor: 0xFFE5B4,
+            speed: 2.00
+          });
+        }
+      };
+
+      initVanta();
+
+      // Handle window resize for responsiveness
+      const handleResize = () => {
+        if (vantaEffect.current && vantaEffect.current.resize) {
+          vantaEffect.current.resize();
+        } else {
+          // Reinitialize if resize method not available
+          initVanta();
+        }
+      };
+
+      window.addEventListener('resize', handleResize);
+      window.addEventListener('orientationchange', handleResize);
+
+      // Cleanup resize listeners
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        window.removeEventListener('orientationchange', handleResize);
+      };
     };
 
-    loadVanta();
+    const cleanup = loadVanta();
 
     return () => {
       if (vantaEffect.current) {
         vantaEffect.current.destroy();
+      }
+      if (cleanup && typeof cleanup.then === 'function') {
+        cleanup.then(cleanupFn => cleanupFn && cleanupFn());
       }
     };
   }, []);
