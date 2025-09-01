@@ -46,13 +46,13 @@ const Home = () => {
           gyroControls: false,
           minHeight: 200.00,
           minWidth: 200.00,
-          skyColor: 0xFFFFFF,
-          cloudColor: 0x3a0ca3,
-          cloudShadowColor: 0x2a0873,
-          sunColor: 0x3a0ca3,
-          sunGlareColor: 0x4a1cb3,
-          sunlightColor: 0x5a2cc3,
-          speed: 1.50
+          skyColor: 0x87CEEB,
+          cloudColor: 0xFFFFFF,
+          cloudShadowColor: 0xE6E6FA,
+          sunColor: 0xFFD700,
+          sunGlareColor: 0xFFA500,
+          sunlightColor: 0xFFE5B4,
+          speed: 2.00
         });
       }
     };
@@ -72,17 +72,8 @@ const Home = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Vanta Background - Fully responsive sizing */}
-      <div 
-        ref={vantaRef} 
-        className="fixed inset-0 w-full h-full z-0" 
-        style={{ 
-          minHeight: '100vh', 
-          minWidth: '100vw',
-          width: '100%',
-          height: '100%'
-        }} 
-      />
+      {/* Vanta Background - Fixed responsive sizing */}
+      <div ref={vantaRef} className="fixed inset-0 w-full h-full z-0" style={{ minHeight: '100vh', minWidth: '100vw' }} />
       
       {/* Content Overlay */}
       <div className="relative z-10 min-h-screen flex flex-col">
@@ -90,8 +81,8 @@ const Home = () => {
         <nav className="p-6 bg-white/20 backdrop-blur-md border-b border-blue-200/30">
           <div className="container mx-auto flex justify-between items-center">
             <div className="flex items-center space-x-3">
-              <Cloud className="w-10 h-10" style={{ color: '#3a0ca3' }} />
-              <span className="text-3xl font-bold" style={{ color: '#3a0ca3' }}>Weather Bliss</span>
+              <Cloud className="w-10 h-10 text-blue-600" />
+              <span className="text-3xl font-bold text-slate-800">Weather Bliss</span>
             </div>
             <div className="hidden md:flex space-x-8">
               <a href="#features" className="text-slate-700 hover:text-blue-600 transition-colors font-medium">Features</a>
@@ -109,7 +100,7 @@ const Home = () => {
         {/* Hero Section */}
         <main className="flex-1 flex items-center justify-center px-6">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="text-6xl md:text-8xl font-bold mb-6 animate-fade-in" style={{ color: '#3a0ca3' }}>
+            <h1 className="text-6xl md:text-8xl font-bold text-slate-800 mb-6 animate-fade-in">
               Weather Bliss
             </h1>
             <p className="text-xl md:text-2xl text-slate-700 mb-8 animate-slide-in">

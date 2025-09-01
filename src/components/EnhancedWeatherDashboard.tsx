@@ -358,21 +358,19 @@ const EnhancedWeatherDashboard = () => {
   const backgroundImage = weatherData ? getBackgroundImage(weatherData.condition, getTimeOfDay()) : sunnySkyBg;
 
   return (
-    <div className="min-h-screen bg-white flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-blue-50 to-indigo-100 flex flex-col relative overflow-hidden">
       {/* Responsive cloud background */}
       <div 
-        className="fixed inset-0 w-full h-full opacity-20 z-0" 
+        className="fixed inset-0 w-full h-full opacity-30 z-0" 
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%233a0ca3' fill-opacity='0.2'%3E%3Cpath d='M25 40c0-13.8 11.2-25 25-25s25 11.2 25 25c0 1.5-.1 3-.3 4.4 8.3 2.7 14.3 10.4 14.3 19.6 0 11.3-9.2 20.5-20.5 20.5H31c-11.3 0-20.5-9.2-20.5-20.5 0-9.2 6-17 14.3-19.6-.2-1.4-.3-2.9-.3-4.4z'/%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%23ffffff' fill-opacity='0.3'%3E%3Cpath d='M25 40c0-13.8 11.2-25 25-25s25 11.2 25 25c0 1.5-.1 3-.3 4.4 8.3 2.7 14.3 10.4 14.3 19.6 0 11.3-9.2 20.5-20.5 20.5H31c-11.3 0-20.5-9.2-20.5-20.5 0-9.2 6-17 14.3-19.6-.2-1.4-.3-2.9-.3-4.4z'/%3E%3C/g%3E%3C/svg%3E")`,
           backgroundSize: '200px 150px',
           backgroundRepeat: 'repeat',
           minHeight: '100vh',
-          minWidth: '100vw',
-          width: '100%',
-          height: '100%'
+          minWidth: '100vw'
         }}
       ></div>
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-white/10 to-blue-50/10"></div>
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-sky-200/10 to-blue-200/10"></div>
       
       <div className="flex-1 relative">
         {/* Weather Animations */}
@@ -387,101 +385,21 @@ const EnhancedWeatherDashboard = () => {
         <div className="absolute inset-0 bg-black/30"></div>
         
         <div className="relative z-10 container mx-auto max-w-7xl p-4">
-          {/* Search Section - Moved to top */}
-          <Card className="mb-8 bg-white/95 backdrop-blur-md border-2 animate-slide-in relative overflow-visible shadow-xl" style={{ borderColor: '#3a0ca3' }}>
-            <CardContent className="p-6">
-              <form onSubmit={handleSearch} className="flex flex-col gap-4">
-                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-1 relative">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 md:w-5 md:h-5 z-10" style={{ color: '#3a0ca3' }} />
-                    {searchLocation && (
-                      <Button
-                        type="button"
-                        onClick={() => {
-                          setSearchLocation('');
-                          setShowSuggestions(false);
-                          searchInputRef.current?.focus();
-                        }}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-1 h-auto bg-transparent hover:bg-slate-100 rounded-full transition-all duration-200"
-                      >
-                        <X className="w-5 h-5 text-slate-500 hover:text-slate-700" />
-                      </Button>
-                    )}
-                    <Input
-                      ref={searchInputRef}
-                      type="text"
-                      placeholder={placeholders[placeholderIndex]}
-                      value={searchLocation}
-                      onChange={(e) => handleSearchInput(e.target.value)}
-                      onFocus={() => searchLocation && setShowSuggestions(true)}
-                      className="pl-14 pr-12 md:pl-12 h-16 md:h-14 text-lg md:text-base bg-white border-2 focus:bg-white text-slate-800 hover:bg-gray-50 transition-all duration-300 focus:shadow-xl rounded-xl placeholder:text-slate-500 placeholder:transition-all placeholder:duration-500"
-                      style={{ borderColor: '#3a0ca3', boxShadow: showSuggestions ? '0 0 20px rgba(58, 12, 163, 0.2)' : 'none' }}
-                      autoComplete="off"
-                    />
-                    
-                    {/* Search Suggestions - Fixed positioning to avoid overlap */}
-                    {showSuggestions && searchSuggestions.length > 0 && (
-                      <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-white border-2 rounded-xl shadow-2xl max-h-80 overflow-y-auto" style={{ borderColor: '#3a0ca3' }}>
-                        {searchSuggestions.map((suggestion, index) => (
-                          <div
-                            key={index}
-                            className="p-4 hover:bg-blue-50 cursor-pointer border-b last:border-b-0 transition-all duration-200"
-                            onClick={() => handleSuggestionSelect(suggestion)}
-                          >
-                            <div className="flex items-center gap-3">
-                              <MapPin className="w-4 h-4 text-slate-500 flex-shrink-0" />
-                              <div className="flex-1 min-w-0">
-                                <p className="font-medium text-slate-900 truncate">{suggestion.name}</p>
-                                <p className="text-sm text-slate-600 truncate">
-                                  {suggestion.state ? `${suggestion.state}, ` : ''}{suggestion.country}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button 
-                      type="submit" 
-                      disabled={loading}
-                      className="h-16 md:h-14 px-6 md:px-4 text-lg md:text-base font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg"
-                      style={{ backgroundColor: '#3a0ca3', color: 'white' }}
-                    >
-                      {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
-                      <span className="ml-2 hidden md:inline">Search</span>
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleCurrentLocation}
-                      disabled={loading}
-                      className="h-16 md:h-14 px-6 md:px-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg border-2"
-                      style={{ borderColor: '#3a0ca3', color: '#3a0ca3' }}
-                    >
-                      <Navigation className="w-5 h-5" />
-                      <span className="ml-2 hidden md:inline">Current</span>
-                    </Button>
-                  </div>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-
           {/* Header */}
           <div className="text-center mb-8 animate-fade-in">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 animate-float drop-shadow-lg" style={{ color: '#3a0ca3' }}>
+            <h1 className="text-4xl md:text-6xl font-bold text-slate-800 mb-4 animate-float drop-shadow-lg">
               🌤️ Weather Bliss
             </h1>
-            <p className="text-xl mb-4 drop-shadow-md" style={{ color: '#3a0ca3' }}>
+            <p className="text-xl text-slate-700 mb-4 drop-shadow-md">
               Beautiful weather insights for your world
             </p>
-            <div className="flex items-center justify-center gap-2" style={{ color: '#3a0ca3' }}>
+            <div className="flex items-center justify-center gap-2 text-slate-600">
               <Clock className="w-5 h-5" />
               <span>{currentTime.toLocaleString()}</span>
             </div>
           </div>
+
+          {/* Search Section */}
           <Card className="mb-8 bg-white/80 backdrop-blur-md border-blue-200/50 animate-slide-in relative overflow-visible shadow-lg">
             <CardContent className="p-6">
               <form onSubmit={handleSearch} className="flex flex-col gap-4">
