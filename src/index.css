@@ -8,17 +8,17 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Sky-inspired color palette */
-    --background: 210 40% 98%;
-    --foreground: 222.2 84% 4.9%;
+    /* Blue and white theme (#3a0ca3) */
+    --background: 0 0% 100%;
+    --foreground: 263 100% 35%;
     
-    /* Weather theme colors */
-    --sky-blue: 204 100% 70%;
-    --sky-blue-light: 204 100% 85%;
-    --sky-blue-dark: 204 100% 55%;
+    /* Weather theme colors - Blue (#3a0ca3) and white */
+    --sky-blue: 263 100% 35%;
+    --sky-blue-light: 263 100% 50%;
+    --sky-blue-dark: 263 100% 25%;
     --sunset-orange: 30 100% 60%;
-    --cloud-white: 0 0% 98%;
-    --rain-blue: 220 60% 50%;
+    --cloud-white: 0 0% 100%;
+    --rain-blue: 263 100% 45%;
     --sunny-yellow: 48 100% 67%;
     
     /* Gradients */
@@ -37,11 +37,11 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 204 100% 55%;
+    --primary: 263 100% 35%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 204 100% 95%;
-    --secondary-foreground: 222.2 84% 4.9%;
+    --secondary: 263 20% 95%;
+    --secondary-foreground: 263 100% 35%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
