@@ -414,25 +414,27 @@ const EnhancedWeatherDashboard = () => {
                       autoComplete="off"
                     />
                     
-                    {/* Search Suggestions - Positioned to avoid overlap */}
+                    {/* Search Suggestions - Enhanced floating dropdown */}
                     {showSuggestions && searchSuggestions.length > 0 && (
-                      <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-white rounded-xl shadow-2xl border border-blue-200/50 max-h-80 overflow-y-auto">
-                        {searchSuggestions.map((suggestion, index) => (
-                          <button
-                            key={index}
-                            type="button"
-                            onClick={() => handleSuggestionSelect(suggestion)}
-                            className="w-full text-left p-4 hover:bg-blue-50 border-b border-blue-100/50 last:border-b-0 transition-colors duration-200 rounded-xl"
-                          >
-                            <div className="flex items-center space-x-3">
-                              <MapPin className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                              <div className="flex-1 min-w-0">
-                                <div className="text-slate-800 font-medium">{suggestion.name}</div>
-                                <div className="text-slate-600 text-sm">{suggestion.state ? `${suggestion.state}, ` : ''}{suggestion.country}</div>
+                      <div className="fixed md:absolute top-full left-0 right-0 md:left-0 md:right-0 z-[9999] mt-2 mx-4 md:mx-0 bg-white rounded-xl shadow-2xl border border-blue-200/50 max-h-80 overflow-y-auto backdrop-blur-sm">
+                        <div className="max-h-80 overflow-y-auto">
+                          {searchSuggestions.map((suggestion, index) => (
+                            <button
+                              key={index}
+                              type="button"
+                              onClick={() => handleSuggestionSelect(suggestion)}
+                              className="w-full text-left p-4 hover:bg-blue-50 border-b border-blue-100/50 last:border-b-0 transition-colors duration-200 first:rounded-t-xl last:rounded-b-xl"
+                            >
+                              <div className="flex items-center space-x-3">
+                                <MapPin className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-slate-800 font-medium truncate">{suggestion.name}</div>
+                                  <div className="text-slate-600 text-sm truncate">{suggestion.state ? `${suggestion.state}, ` : ''}{suggestion.country}</div>
+                                </div>
                               </div>
-                            </div>
-                          </button>
-                        ))}
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
