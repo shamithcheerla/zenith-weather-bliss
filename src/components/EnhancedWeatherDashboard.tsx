@@ -358,50 +358,34 @@ const EnhancedWeatherDashboard = () => {
   const backgroundImage = weatherData ? getBackgroundImage(weatherData.condition, getTimeOfDay()) : sunnySkyBg;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-blue-50 to-indigo-100 flex flex-col relative overflow-hidden">
-      {/* Responsive cloud background */}
-      <div 
-        className="fixed inset-0 w-full h-full opacity-30 z-0" 
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%23ffffff' fill-opacity='0.3'%3E%3Cpath d='M25 40c0-13.8 11.2-25 25-25s25 11.2 25 25c0 1.5-.1 3-.3 4.4 8.3 2.7 14.3 10.4 14.3 19.6 0 11.3-9.2 20.5-20.5 20.5H31c-11.3 0-20.5-9.2-20.5-20.5 0-9.2 6-17 14.3-19.6-.2-1.4-.3-2.9-.3-4.4z'/%3E%3C/g%3E%3C/svg%3E")`,
-          backgroundSize: '200px 150px',
-          backgroundRepeat: 'repeat',
-          minHeight: '100vh',
-          minWidth: '100vw'
-        }}
-      ></div>
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-sky-200/10 to-blue-200/10"></div>
+    <div className="min-h-screen relative overflow-hidden" style={{
+      backgroundImage: `url(${backgroundImage})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundAttachment: 'fixed'
+    }}>
+      {/* Dynamic weather overlay */}
+      <div className="absolute inset-0 bg-black/40"></div>
       
-      <div className="flex-1 relative">
-        {/* Weather Animations */}
-        {weatherData && (
-          <WeatherAnimations 
-            condition={weatherData.condition} 
-            intensity={weatherData.windSpeed > 20 ? 'heavy' : weatherData.windSpeed > 10 ? 'medium' : 'light'}
-          />
-        )}
-        
-        {/* Overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/30"></div>
-        
-        <div className="relative z-10 container mx-auto max-w-7xl p-4">
+      <div className="flex-1 relative z-10">
+        <div className="container mx-auto max-w-7xl p-4">
           {/* Header */}
-          <div className="text-center mb-8 animate-fade-in">
-            <h1 className="text-4xl md:text-6xl font-bold text-slate-800 mb-4 animate-float drop-shadow-lg">
-              🌤️ Weather Bliss
+          <div className="text-center mb-6 animate-fade-in">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 animate-float drop-shadow-lg text-white">
+              <span style={{ color: '#3a0ca3' }}>🌤️ Weather Bliss</span>
             </h1>
-            <p className="text-xl text-slate-700 mb-4 drop-shadow-md">
+            <p className="text-xl mb-4 drop-shadow-md text-white">
               Beautiful weather insights for your world
             </p>
-            <div className="flex items-center justify-center gap-2 text-slate-600">
+            <div className="flex items-center justify-center gap-2 text-white">
               <Clock className="w-5 h-5" />
               <span>{currentTime.toLocaleString()}</span>
             </div>
           </div>
 
-          {/* Search Section */}
-          <Card className="mb-8 bg-white/80 backdrop-blur-md border-blue-200/50 animate-slide-in relative overflow-visible shadow-lg">
-            <CardContent className="p-6">
+          {/* Search Section - Moved to top with better positioning */}
+          <Card className="mb-6 bg-white/90 backdrop-blur-md border-blue-200/50 animate-slide-in relative overflow-visible shadow-xl">
+            <CardContent className="p-4">
               <form onSubmit={handleSearch} className="flex flex-col gap-4">
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-1 relative">
@@ -426,107 +410,54 @@ const EnhancedWeatherDashboard = () => {
                       value={searchLocation}
                       onChange={(e) => handleSearchInput(e.target.value)}
                       onFocus={() => searchLocation && setShowSuggestions(true)}
-                      className="pl-14 pr-12 md:pl-12 h-16 md:h-14 text-lg md:text-base bg-white/70 border-blue-200/50 focus:bg-white/90 text-slate-800 hover:bg-white/80 transition-all duration-300 focus:shadow-xl focus:border-blue-400 rounded-xl placeholder:text-slate-500 placeholder:transition-all placeholder:duration-500"
+                      className="pl-14 pr-12 md:pl-12 h-12 text-base bg-white/90 border-blue-200/50 focus:bg-white text-slate-800 hover:bg-white/95 transition-all duration-300 focus:shadow-xl focus:border-blue-400 rounded-xl placeholder:text-slate-500"
                       autoComplete="off"
                     />
                     
-                    {/* Search Suggestions - Properly positioned to avoid overlap */}
+                    {/* Search Suggestions - Positioned to avoid overlap */}
                     {showSuggestions && searchSuggestions.length > 0 && (
-                      <>
-                        {/* Mobile overlay */}
-                        <div className="fixed inset-0 bg-black/50 z-[100] md:hidden" onClick={() => setShowSuggestions(false)}></div>
-                        
-                        {/* Search dropdown - positioned properly */}
-                        <div className="absolute top-full left-0 right-0 bg-white rounded-xl shadow-2xl mt-2 z-[101] max-h-[60vh] overflow-y-auto border border-blue-200 animate-fade-in">
-                          <div className="p-2">
-                            <div className="text-sm text-slate-400 px-3 py-2 border-b border-slate-600 bg-slate-700/50">
-                              ✨ Found {searchSuggestions.length} location{searchSuggestions.length !== 1 ? 's' : ''}
+                      <div className="absolute top-full left-0 right-0 z-50 mt-2 bg-white rounded-xl shadow-2xl border border-blue-200/50 max-h-80 overflow-y-auto">
+                        {searchSuggestions.map((suggestion, index) => (
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() => handleSuggestionSelect(suggestion)}
+                            className="w-full text-left p-4 hover:bg-blue-50 border-b border-blue-100/50 last:border-b-0 transition-colors duration-200 rounded-xl"
+                          >
+                            <div className="flex items-center space-x-3">
+                              <MapPin className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                              <div className="flex-1 min-w-0">
+                                <div className="text-slate-800 font-medium">{suggestion.name}</div>
+                                <div className="text-slate-600 text-sm">{suggestion.state ? `${suggestion.state}, ` : ''}{suggestion.country}</div>
+                              </div>
                             </div>
-                            {searchSuggestions.map((suggestion, index) => (
-                              <button
-                                key={index}
-                                type="button"
-                                onClick={() => handleSuggestionSelect(suggestion)}
-                                className="w-full text-left px-4 py-4 md:py-3 hover:bg-slate-700/60 rounded-lg margin-1 flex items-center gap-3 transition-all duration-300 hover:shadow-md group"
-                              >
-                                <div className="p-2 bg-slate-700/60 rounded-lg group-hover:bg-sky-600/60 transition-all duration-300 group-hover:scale-110">
-                                  <MapPin className="w-5 h-5 md:w-4 md:h-4 text-sky-400 group-hover:text-sky-200 transition-colors" />
-                                </div>
-                                <div className="flex-1">
-                                  <div className="font-semibold text-slate-100 text-base md:text-sm group-hover:text-white transition-colors">{suggestion.name}</div>
-                                  <div className="text-sm md:text-xs text-slate-400 group-hover:text-slate-300 transition-colors">
-                                    {suggestion.state && `${suggestion.state}, `}{suggestion.country}
-                                  </div>
-                                </div>
-                                <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                                  <ArrowRight className="w-5 h-5 text-sky-400 group-hover:scale-110" />
-                                </div>
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      </>
+                          </button>
+                        ))}
+                      </div>
                     )}
                   </div>
-                  <div className="flex gap-2 md:gap-4">
-                    <Button type="submit" disabled={loading} className="flex-1 md:flex-none h-12 md:h-10 bg-sky-600 hover:bg-sky-700 hover:shadow-lg transition-all duration-300 hover:scale-105 text-white">
-                      {loading ? <Loader2 className="w-5 h-5 md:w-4 md:h-4 animate-spin" /> : 'Search'}
+                  
+                  <div className="flex gap-2">
+                    <Button 
+                      type="submit" 
+                      disabled={loading}
+                      className="px-6 text-white"
+                      style={{ backgroundColor: '#3a0ca3' }}
+                    >
+                      {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Search'}
                     </Button>
-                    <Button
+                    
+                    <Button 
                       type="button"
                       onClick={handleCurrentLocation}
                       disabled={loading}
                       variant="outline"
-                      className="flex-1 md:flex-none h-12 md:h-10 bg-slate-700/60 border-slate-600/50 text-slate-200 hover:bg-slate-700/80 hover:shadow-lg transition-all duration-300 hover:scale-105"
+                      className="px-4 border-blue-200 hover:bg-blue-50"
                     >
-                      {loading ? (
-                        <LoadingDots />
-                      ) : (
-                        <Navigation className="w-5 h-5 md:w-4 md:h-4 mr-2" />
-                      )}
-                      {loading ? 'Detecting...' : 'My Location'}
+                      <Navigation className="w-5 h-5" />
                     </Button>
                   </div>
                 </div>
-                
-                {/* Search History and Favorite Locations */}
-                {(searchHistory.length > 0 || favoriteLocations.length > 0) && (
-                  <div className="space-y-2">
-                    {searchHistory.length > 0 && (
-                      <div className="flex gap-2 flex-wrap">
-                        <span className="text-slate-300 text-sm">Recent searches:</span>
-                        {searchHistory.map((search, index) => (
-                          <Badge
-                            key={index}
-                            variant="outline"
-                            className="cursor-pointer hover:bg-slate-700/60 bg-slate-700/30 text-slate-200 border-slate-600/50"
-                            onClick={() => setSearchLocation(search)}
-                          >
-                            <Clock className="w-3 h-3 mr-1" />
-                            {search}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                    
-                    {favoriteLocations.length > 0 && (
-                      <div className="flex gap-2 flex-wrap">
-                        <span className="text-slate-300 text-sm">Favorite locations:</span>
-                        {favoriteLocations.map((location, index) => (
-                          <Badge
-                            key={index}
-                            variant="secondary"
-                            className="cursor-pointer hover:bg-slate-600/60 bg-slate-700/40 text-slate-200 border-slate-600/50"
-                            onClick={() => fetchWeatherByLocation(location)}
-                          >
-                            <Star className="w-3 h-3 mr-1" />
-                            {location.name}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
               </form>
             </CardContent>
           </Card>
