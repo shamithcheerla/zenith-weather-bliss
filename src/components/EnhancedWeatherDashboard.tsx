@@ -367,10 +367,90 @@ const EnhancedWeatherDashboard = () => {
       {/* Dynamic weather overlay */}
       <div className="absolute inset-0 bg-black/40"></div>
       
-      <div className="flex-1 relative z-10">
+      {/* Fixed Search Header - Completely separate from content */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-blue-200/50 shadow-lg">
+        <div className="container mx-auto max-w-4xl p-4">
+          <form onSubmit={handleSearch} className="flex flex-col gap-4">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 w-6 h-6 md:w-5 md:h-5 z-10" />
+                {searchLocation && (
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setSearchLocation('');
+                      setShowSuggestions(false);
+                      searchInputRef.current?.focus();
+                    }}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-1 h-auto bg-transparent hover:bg-slate-600 rounded-full transition-all duration-200"
+                  >
+                    <X className="w-5 h-5 text-slate-500 hover:text-slate-700" />
+                  </Button>
+                )}
+                <Input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder={placeholders[placeholderIndex]}
+                  value={searchLocation}
+                  onChange={(e) => handleSearchInput(e.target.value)}
+                  onFocus={() => searchLocation && setShowSuggestions(true)}
+                  className="pl-14 pr-12 md:pl-12 h-12 text-base bg-white border-blue-200/50 focus:bg-white text-slate-800 hover:bg-white/95 transition-all duration-300 focus:shadow-xl focus:border-blue-400 rounded-xl placeholder:text-slate-500"
+                  autoComplete="off"
+                />
+                
+                {/* Search Suggestions - Properly positioned dropdown */}
+                {showSuggestions && searchSuggestions.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 z-[99999] mt-2 bg-white rounded-xl shadow-2xl border border-blue-200/50 max-h-80 overflow-y-auto">
+                    {searchSuggestions.map((suggestion, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => handleSuggestionSelect(suggestion)}
+                        className="w-full text-left p-4 hover:bg-blue-50 border-b border-blue-100/50 last:border-b-0 transition-colors duration-200 first:rounded-t-xl last:rounded-b-xl"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <MapPin className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <div className="text-slate-800 font-medium truncate">{suggestion.name}</div>
+                            <div className="text-slate-600 text-sm truncate">{suggestion.state ? `${suggestion.state}, ` : ''}{suggestion.country}</div>
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex gap-2">
+                <Button 
+                  type="submit" 
+                  disabled={loading}
+                  className="px-6 text-white"
+                  style={{ backgroundColor: '#3a0ca3' }}
+                >
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Search'}
+                </Button>
+                
+                <Button 
+                  type="button"
+                  onClick={handleCurrentLocation}
+                  disabled={loading}
+                  variant="outline"
+                  className="px-4 border-blue-200 hover:bg-blue-50"
+                >
+                  <Navigation className="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      {/* Main Content with proper top spacing to avoid fixed header overlap */}
+      <div className="flex-1 relative z-10 pt-32">
         <div className="container mx-auto max-w-7xl p-4">
           {/* Header */}
-          <div className="text-center mb-6 animate-fade-in">
+          <div className="text-center mb-8 animate-fade-in">
             <h1 className="text-4xl md:text-6xl font-bold mb-4 animate-float drop-shadow-lg text-white">
               <span style={{ color: '#3a0ca3' }}>🌤️ Weather Bliss</span>
             </h1>
@@ -382,87 +462,6 @@ const EnhancedWeatherDashboard = () => {
               <span>{currentTime.toLocaleString()}</span>
             </div>
           </div>
-
-          {/* Search Section - Moved to top with better positioning */}
-          <Card className="mb-6 bg-white/90 backdrop-blur-md border-blue-200/50 animate-slide-in relative overflow-visible shadow-xl">
-            <CardContent className="p-4">
-              <form onSubmit={handleSearch} className="flex flex-col gap-4">
-                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-1 relative">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500 w-6 h-6 md:w-5 md:h-5 z-10" />
-                    {searchLocation && (
-                      <Button
-                        type="button"
-                        onClick={() => {
-                          setSearchLocation('');
-                          setShowSuggestions(false);
-                          searchInputRef.current?.focus();
-                        }}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-1 h-auto bg-transparent hover:bg-slate-600 rounded-full transition-all duration-200"
-                      >
-                        <X className="w-5 h-5 text-slate-500 hover:text-slate-700" />
-                      </Button>
-                    )}
-                    <Input
-                      ref={searchInputRef}
-                      type="text"
-                      placeholder={placeholders[placeholderIndex]}
-                      value={searchLocation}
-                      onChange={(e) => handleSearchInput(e.target.value)}
-                      onFocus={() => searchLocation && setShowSuggestions(true)}
-                      className="pl-14 pr-12 md:pl-12 h-12 text-base bg-white/90 border-blue-200/50 focus:bg-white text-slate-800 hover:bg-white/95 transition-all duration-300 focus:shadow-xl focus:border-blue-400 rounded-xl placeholder:text-slate-500"
-                      autoComplete="off"
-                    />
-                    
-                    {/* Search Suggestions - Enhanced floating dropdown */}
-                    {showSuggestions && searchSuggestions.length > 0 && (
-                      <div className="fixed md:absolute top-full left-0 right-0 md:left-0 md:right-0 z-[9999] mt-2 mx-4 md:mx-0 bg-white rounded-xl shadow-2xl border border-blue-200/50 max-h-80 overflow-y-auto backdrop-blur-sm">
-                        <div className="max-h-80 overflow-y-auto">
-                          {searchSuggestions.map((suggestion, index) => (
-                            <button
-                              key={index}
-                              type="button"
-                              onClick={() => handleSuggestionSelect(suggestion)}
-                              className="w-full text-left p-4 hover:bg-blue-50 border-b border-blue-100/50 last:border-b-0 transition-colors duration-200 first:rounded-t-xl last:rounded-b-xl"
-                            >
-                              <div className="flex items-center space-x-3">
-                                <MapPin className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                                <div className="flex-1 min-w-0">
-                                  <div className="text-slate-800 font-medium truncate">{suggestion.name}</div>
-                                  <div className="text-slate-600 text-sm truncate">{suggestion.state ? `${suggestion.state}, ` : ''}{suggestion.country}</div>
-                                </div>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <Button 
-                      type="submit" 
-                      disabled={loading}
-                      className="px-6 text-white"
-                      style={{ backgroundColor: '#3a0ca3' }}
-                    >
-                      {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Search'}
-                    </Button>
-                    
-                    <Button 
-                      type="button"
-                      onClick={handleCurrentLocation}
-                      disabled={loading}
-                      variant="outline"
-                      className="px-4 border-blue-200 hover:bg-blue-50"
-                    >
-                      <Navigation className="w-5 h-5" />
-                    </Button>
-                  </div>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
 
           {/* Main Weather Display */}
           {weatherData && (
