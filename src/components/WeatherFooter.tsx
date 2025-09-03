@@ -1,7 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Cloud, Github, Twitter, Linkedin } from 'lucide-react';
 
 const WeatherFooter = () => {
+  const navigate = useNavigate();
+
   return (
     <footer className="bg-white/80 backdrop-blur-md border-t border-blue-200/30 mt-8">
       <div className="container mx-auto px-6 py-6">
@@ -21,8 +24,9 @@ const WeatherFooter = () => {
           <div className="space-y-2">
             <h3 className="text-slate-800 font-semibold">Quick Links</h3>
             <ul className="space-y-1 text-sm">
-              <li className="text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Weather Data</li>
-              <li className="text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Forecasts</li>
+              <li><button onClick={() => navigate('/weather')} className="text-slate-600 hover:text-blue-600 transition-colors">Weather Data</button></li>
+              <li><button onClick={() => navigate('/features')} className="text-slate-600 hover:text-blue-600 transition-colors">Features</button></li>
+              <li><button onClick={() => navigate('/about')} className="text-slate-600 hover:text-blue-600 transition-colors">About</button></li>
             </ul>
           </div>
 

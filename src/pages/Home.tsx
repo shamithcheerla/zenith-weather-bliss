@@ -118,8 +118,8 @@ const Home = () => {
               <span className="text-3xl font-bold text-slate-800">Weather Bliss</span>
             </div>
             <div className="hidden md:flex space-x-8">
-              <a href="#features" className="text-slate-700 hover:text-blue-600 transition-colors font-medium">Features</a>
-              <a href="#about" className="text-slate-700 hover:text-blue-600 transition-colors font-medium">About</a>
+              <button onClick={() => navigate('/features')} className="text-slate-700 hover:text-blue-600 transition-colors font-medium">Features</button>
+              <button onClick={() => navigate('/about')} className="text-slate-700 hover:text-blue-600 transition-colors font-medium">About</button>
               <button 
                 onClick={() => navigate('/contact')} 
                 className="text-slate-700 hover:text-blue-600 transition-colors font-medium"
@@ -193,8 +193,8 @@ const Home = () => {
                 <h3 className="text-slate-800 font-semibold">Quick Links</h3>
                 <ul className="space-y-1 text-sm">
                   <li><button onClick={() => navigate('/weather')} className="text-slate-600 hover:text-blue-600 transition-colors">Weather Data</button></li>
-                  <li className="text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Features</li>
-                  <li className="text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">About</li>
+                  <li><button onClick={() => navigate('/features')} className="text-slate-600 hover:text-blue-600 transition-colors">Features</button></li>
+                  <li><button onClick={() => navigate('/about')} className="text-slate-600 hover:text-blue-600 transition-colors">About</button></li>
                 </ul>
               </div>
 
