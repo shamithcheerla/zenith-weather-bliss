@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Cloud, Sun, CloudRain, ArrowRight, MapPin, Thermometer, Wind } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import WeatherFooter from '@/components/WeatherFooter';
 import * as THREE from 'three';
 
 // Declare VANTA for TypeScript
@@ -173,58 +174,8 @@ const Home = () => {
           </div>
         </main>
 
-        {/* Simplified Footer */}
-        <footer className="bg-white/20 backdrop-blur-md border-t border-blue-200/30 mt-16">
-          <div className="container mx-auto px-6 py-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              {/* Brand Section */}
-              <div className="space-y-3">
-                <div className="flex items-center space-x-2">
-                  <Cloud className="w-6 h-6 text-blue-600" />
-                  <span className="text-lg font-bold text-slate-800">Weather Bliss</span>
-                </div>
-                <p className="text-slate-600 text-sm leading-relaxed">
-                  Beautiful weather insights with comprehensive data visualization.
-                </p>
-              </div>
-
-              {/* Quick Links */}
-              <div className="space-y-3">
-                <h3 className="text-slate-800 font-semibold">Quick Links</h3>
-                <ul className="space-y-1 text-sm">
-                  <li><button onClick={() => navigate('/weather')} className="text-slate-600 hover:text-blue-600 transition-colors">Weather Data</button></li>
-                  <li><button onClick={() => navigate('/features')} className="text-slate-600 hover:text-blue-600 transition-colors">Features</button></li>
-                  <li><button onClick={() => navigate('/about')} className="text-slate-600 hover:text-blue-600 transition-colors">About</button></li>
-                </ul>
-              </div>
-
-              {/* Contact */}
-              <div className="space-y-3">
-                <h3 className="text-slate-800 font-semibold">Contact</h3>
-                <div className="text-sm space-y-1">
-                  <p className="text-slate-600">support@weatherbliss.com</p>
-                  <button 
-                    onClick={() => navigate('/contact')}
-                    className="text-blue-600 hover:text-blue-700 transition-colors"
-                  >
-                    Contact Us
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom Section */}
-            <div className="border-t border-blue-200/30 pt-4">
-              <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
-                <p className="text-slate-600 text-sm">&copy; 2024 Weather Bliss. All rights reserved.</p>
-                <div className="flex space-x-4 text-xs">
-                  <span className="text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Privacy</span>
-                  <span className="text-slate-600 hover:text-blue-600 transition-colors cursor-pointer">Terms</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </footer>
+        {/* Enhanced Footer */}
+        <WeatherFooter />
       </div>
     </div>
   );

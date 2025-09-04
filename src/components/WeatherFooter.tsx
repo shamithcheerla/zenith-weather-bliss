@@ -43,10 +43,12 @@ const WeatherFooter = () => {
         {/* Bottom Section */}
         <div className="border-t border-white/20 pt-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
-            <p className="text-white/90 text-base font-medium drop-shadow-md">&copy; 2024 Weather Bliss. All rights reserved.</p>
-            <div className="flex space-x-6 text-base">
-              <span className="text-white/90 hover:text-white hover:scale-105 transition-all duration-200 cursor-pointer font-medium">Privacy</span>
-              <span className="text-white/90 hover:text-white hover:scale-105 transition-all duration-200 cursor-pointer font-medium">Terms</span>
+            <div className="flex flex-col md:flex-row justify-center items-center space-y-2 md:space-y-0 md:space-x-6">
+              <p className="text-white/90 text-base font-medium drop-shadow-md text-center">&copy; 2025 Weather Bliss. All rights reserved.</p>
+              <div className="flex space-x-6 text-base">
+                <span className="text-white/90 hover:text-white hover:scale-105 transition-all duration-200 cursor-pointer font-medium">Privacy</span>
+                <span className="text-white/90 hover:text-white hover:scale-105 transition-all duration-200 cursor-pointer font-medium">Terms</span>
+              </div>
             </div>
           </div>
         </div>

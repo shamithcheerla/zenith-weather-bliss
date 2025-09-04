@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface WeatherAnimationsProps {
   condition: string;
@@ -6,173 +6,225 @@ interface WeatherAnimationsProps {
 }
 
 const WeatherAnimations: React.FC<WeatherAnimationsProps> = ({ condition, intensity = 'medium' }) => {
-  const getParticleCount = () => {
-    switch (intensity) {
-      case 'light': return 20;
-      case 'heavy': return 60;
-      default: return 40;
-    }
-  };
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const renderRainDrops = () => {
-    const drops = [];
-    const count = getParticleCount();
-    
-    for (let i = 0; i < count; i++) {
-      const left = Math.random() * 100;
-      const animationDelay = Math.random() * 2;
-      const duration = 0.5 + Math.random() * 0.5;
-      
-      drops.push(
-        <div
-          key={`rain-${i}`}
-          className="absolute top-0 w-0.5 bg-gradient-to-b from-blue-400 to-transparent opacity-60"
-          style={{
-            left: `${left}%`,
-            height: `${Math.random() * 30 + 20}px`,
-            animationDelay: `${animationDelay}s`,
-            animation: `rainfall ${duration}s linear infinite`
-          }}
-        />
-      );
-    }
-    return drops;
-  };
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-  const renderSnowFlakes = () => {
-    const flakes = [];
-    const count = Math.floor(getParticleCount() * 0.7);
-    
-    for (let i = 0; i < count; i++) {
-      const left = Math.random() * 100;
-      const animationDelay = Math.random() * 3;
-      const duration = 3 + Math.random() * 2;
-      const size = Math.random() * 4 + 2;
-      
-      flakes.push(
-        <div
-          key={`snow-${i}`}
-          className="absolute top-0 bg-white rounded-full opacity-80"
-          style={{
-            left: `${left}%`,
-            width: `${size}px`,
-            height: `${size}px`,
-            animationDelay: `${animationDelay}s`,
-            animation: `snowfall ${duration}s linear infinite`
-          }}
-        />
-      );
-    }
-    return flakes;
-  };
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-  const renderClouds = () => {
-    const clouds = [];
-    const count = 5;
-    
-    for (let i = 0; i < count; i++) {
-      const top = Math.random() * 40;
-      const duration = 20 + Math.random() * 10;
-      const size = Math.random() * 60 + 40;
-      
-      clouds.push(
-        <div
-          key={`cloud-${i}`}
-          className="absolute bg-white/10 rounded-full"
-          style={{
-            top: `${top}%`,
-            left: '-100px',
-            width: `${size}px`,
-            height: `${size * 0.6}px`,
-            animation: `cloudDrift ${duration}s linear infinite`
-          }}
-        />
-      );
-    }
-    return clouds;
-  };
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-  const renderSunRays = () => {
-    const rays = [];
-    const count = 8;
-    
-    for (let i = 0; i < count; i++) {
-      const rotation = (360 / count) * i;
-      
-      rays.push(
-        <div
-          key={`ray-${i}`}
-          className="absolute top-1/2 left-1/2 w-1 h-20 bg-gradient-to-t from-yellow-400/30 to-transparent origin-bottom"
-          style={{
-            transform: `translate(-50%, -100%) rotate(${rotation}deg)`,
-            animation: 'sunRays 4s ease-in-out infinite'
-          }}
-        />
-      );
-    }
-    return rays;
-  };
+    const particles: any[] = [];
+    let animationId: number;
 
-  if (condition.toLowerCase().includes('rain') || condition.toLowerCase().includes('storm')) {
-    return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {renderRainDrops()}
-        <style dangerouslySetInnerHTML={{
-          __html: `
-            @keyframes rainfall {
-              to {
-                transform: translateY(100vh);
-              }
-            }
-          `
-        }} />
-      </div>
-    );
-  }
+    const getParticleCount = () => {
+      switch (intensity) {
+        case 'light': return 30;
+        case 'heavy': return 100;
+        default: return 60;
+      }
+    };
 
-  if (condition.toLowerCase().includes('snow')) {
-    return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {renderSnowFlakes()}
-        <style dangerouslySetInnerHTML={{
-          __html: `
-            @keyframes snowfall {
-              to {
-                transform: translateY(100vh) translateX(20px);
-              }
-            }
-          `
-        }} />
-      </div>
-    );
-  }
+    // Enhanced particle system for different weather conditions
+    const initParticles = () => {
+      particles.length = 0;
+      const count = getParticleCount();
 
-  if (condition.toLowerCase().includes('cloud')) {
-    return (
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {renderClouds()}
-        <style dangerouslySetInnerHTML={{
-          __html: `
-            @keyframes cloudDrift {
-              from {
-                transform: translateX(-100px);
-              }
-              to {
-                transform: translateX(calc(100vw + 100px));
-              }
-            }
-          `
-        }} />
-      </div>
-    );
-  }
+      for (let i = 0; i < count; i++) {
+        if (condition.toLowerCase().includes('rain')) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * -canvas.height,
+            width: 2 + Math.random() * 3,
+            height: 15 + Math.random() * 20,
+            speed: 8 + Math.random() * 12,
+            opacity: 0.4 + Math.random() * 0.4,
+            angle: Math.random() * 0.2 - 0.1
+          });
+        } else if (condition.toLowerCase().includes('snow')) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * -canvas.height,
+            size: 3 + Math.random() * 8,
+            speed: 1 + Math.random() * 3,
+            opacity: 0.6 + Math.random() * 0.4,
+            drift: Math.random() * 2 - 1,
+            rotation: Math.random() * 360
+          });
+        } else if (condition.toLowerCase().includes('cloud')) {
+          particles.push({
+            x: Math.random() * (canvas.width + 200) - 100,
+            y: Math.random() * canvas.height * 0.6,
+            width: 80 + Math.random() * 120,
+            height: 40 + Math.random() * 60,
+            speed: 0.3 + Math.random() * 0.7,
+            opacity: 0.1 + Math.random() * 0.2
+          });
+        }
+      }
+    };
 
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach((particle, index) => {
+        if (condition.toLowerCase().includes('rain')) {
+          // Enhanced rain with 3D effect
+          ctx.save();
+          ctx.globalAlpha = particle.opacity;
+          
+          const gradient = ctx.createLinearGradient(
+            particle.x, particle.y,
+            particle.x, particle.y + particle.height
+          );
+          gradient.addColorStop(0, '#4fc3f7');
+          gradient.addColorStop(0.5, '#29b6f6');
+          gradient.addColorStop(1, 'rgba(33, 150, 243, 0)');
+          
+          ctx.fillStyle = gradient;
+          ctx.fillRect(particle.x, particle.y, particle.width, particle.height);
+          ctx.restore();
+
+          particle.y += particle.speed;
+          particle.x += particle.angle * 2;
+
+          if (particle.y > canvas.height) {
+            particle.y = -particle.height;
+            particle.x = Math.random() * canvas.width;
+          }
+        } else if (condition.toLowerCase().includes('snow')) {
+          // Enhanced snowflakes with rotation
+          ctx.save();
+          ctx.globalAlpha = particle.opacity;
+          ctx.translate(particle.x + particle.size / 2, particle.y + particle.size / 2);
+          ctx.rotate((particle.rotation * Math.PI) / 180);
+          
+          // Draw detailed snowflake
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size);
+          
+          // Add sparkle effect
+          ctx.fillStyle = '#e3f2fd';
+          ctx.fillRect(-particle.size / 4, -particle.size / 4, particle.size / 2, particle.size / 2);
+          
+          ctx.restore();
+
+          particle.y += particle.speed;
+          particle.x += particle.drift;
+          particle.rotation += 2;
+
+          if (particle.y > canvas.height) {
+            particle.y = -particle.size;
+            particle.x = Math.random() * canvas.width;
+          }
+        } else if (condition.toLowerCase().includes('cloud')) {
+          // Enhanced clouds with gradient
+          ctx.save();
+          ctx.globalAlpha = particle.opacity;
+          
+          const gradient = ctx.createRadialGradient(
+            particle.x + particle.width / 2, particle.y + particle.height / 2, 0,
+            particle.x + particle.width / 2, particle.y + particle.height / 2, particle.width / 2
+          );
+          gradient.addColorStop(0, '#ffffff');
+          gradient.addColorStop(0.7, '#f5f5f5');
+          gradient.addColorStop(1, 'rgba(245, 245, 245, 0)');
+          
+          ctx.fillStyle = gradient;
+          ctx.beginPath();
+          ctx.ellipse(
+            particle.x + particle.width / 2, 
+            particle.y + particle.height / 2,
+            particle.width / 2, 
+            particle.height / 2,
+            0, 0, 2 * Math.PI
+          );
+          ctx.fill();
+          ctx.restore();
+
+          particle.x += particle.speed;
+
+          if (particle.x > canvas.width + 100) {
+            particle.x = -particle.width - 100;
+            particle.y = Math.random() * canvas.height * 0.6;
+          }
+        }
+      });
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
+    };
+
+    initParticles();
+    animate();
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [condition, intensity]);
+
+  // Render enhanced sun rays for clear weather
   if (condition.toLowerCase().includes('sunny') || condition.toLowerCase().includes('clear')) {
     return (
-      <div className="absolute top-20 right-20 pointer-events-none">
-        {renderSunRays()}
-        <div className="w-16 h-16 bg-yellow-400/20 rounded-full animate-pulse" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-16 right-16 w-32 h-32">
+          {/* Enhanced sun with multiple layers */}
+          <div className="absolute inset-0 bg-gradient-radial from-yellow-300/40 via-orange-300/20 to-transparent rounded-full animate-pulse" />
+          <div className="absolute inset-2 bg-gradient-radial from-yellow-400/60 via-orange-400/30 to-transparent rounded-full animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute inset-4 bg-gradient-radial from-yellow-500/80 via-orange-500/40 to-transparent rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+          
+          {/* Enhanced sun rays */}
+          {Array.from({ length: 12 }, (_, i) => (
+            <div
+              key={i}
+              className="absolute top-1/2 left-1/2 w-1 bg-gradient-to-t from-yellow-400/60 to-transparent origin-bottom"
+              style={{
+                height: '80px',
+                transform: `translate(-50%, -100%) rotate(${(360 / 12) * i}deg)`,
+                animation: `sunRays 3s ease-in-out infinite ${i * 0.2}s`
+              }}
+            />
+          ))}
+        </div>
+        
+        {/* Enhanced CSS animations */}
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            @keyframes sunRays {
+              0%, 100% { opacity: 0.3; transform: translate(-50%, -100%) scale(1); }
+              50% { opacity: 0.8; transform: translate(-50%, -100%) scale(1.1); }
+            }
+            .bg-gradient-radial { 
+              background: radial-gradient(circle, var(--tw-gradient-stops)); 
+            }
+          `
+        }} />
       </div>
+    );
+  }
+
+  // Return canvas for rain, snow, and clouds
+  if (condition.toLowerCase().includes('rain') || 
+      condition.toLowerCase().includes('snow') || 
+      condition.toLowerCase().includes('cloud')) {
+    return (
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 pointer-events-none"
+        style={{ zIndex: 10 }}
+      />
     );
   }
 
