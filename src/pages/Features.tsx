@@ -1,17 +1,111 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Cloud, ArrowLeft, Thermometer, Sun, CloudRain, Eye, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import WeatherFooter from '@/components/WeatherFooter';
+import * as THREE from 'three';
+
+// Declare VANTA for TypeScript
+declare global {
+  interface Window {
+    VANTA: any;
+  }
+}
 
 const Features = () => {
   const navigate = useNavigate();
+  const vantaRef = useRef<HTMLDivElement>(null);
+  const vantaEffect = useRef<any>(null);
+
+  useEffect(() => {
+    // Load Vanta.js scripts
+    const loadVanta = async () => {
+      // Load Three.js
+      const threeScript = document.createElement('script');
+      threeScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js';
+      document.head.appendChild(threeScript);
+
+      await new Promise(resolve => {
+        threeScript.onload = resolve;
+      });
+
+      // Load Vanta Clouds
+      const vantaScript = document.createElement('script');
+      vantaScript.src = 'https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.clouds.min.js';
+      document.head.appendChild(vantaScript);
+
+      await new Promise(resolve => {
+        vantaScript.onload = resolve;
+      });
+
+      // Initialize Vanta effect
+      const initVanta = () => {
+        if (vantaRef.current && window.VANTA) {
+          if (vantaEffect.current) {
+            vantaEffect.current.destroy();
+          }
+          
+          vantaEffect.current = window.VANTA.CLOUDS({
+            el: vantaRef.current,
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: Math.max(window.innerHeight, 400),
+            minWidth: Math.max(window.innerWidth, 300),
+            scale: 1.0,
+            scaleMobile: 1.0,
+            skyColor: 0x87CEEB,
+            cloudColor: 0xFFFFFF,
+            cloudShadowColor: 0xE6E6FA,
+            sunColor: 0xFFD700,
+            sunGlareColor: 0xFFA500,
+            sunlightColor: 0xFFE5B4,
+            speed: 2.00
+          });
+        }
+      };
+
+      initVanta();
+
+      const handleResize = () => {
+        if (vantaEffect.current && vantaEffect.current.resize) {
+          vantaEffect.current.resize();
+        } else {
+          initVanta();
+        }
+      };
+
+      window.addEventListener('resize', handleResize);
+      window.addEventListener('orientationchange', handleResize);
+
+      return () => {
+        window.removeEventListener('resize', handleResize);
+        window.removeEventListener('orientationchange', handleResize);
+      };
+    };
+
+    const cleanup = loadVanta();
+
+    return () => {
+      if (vantaEffect.current) {
+        vantaEffect.current.destroy();
+      }
+      if (cleanup && typeof cleanup.then === 'function') {
+        cleanup.then(cleanupFn => cleanupFn && cleanupFn());
+      }
+    };
+  }, []);
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="bg-white/80 backdrop-blur-md border-b border-blue-200/50 sticky top-0 z-50">
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Vanta Background */}
+      <div ref={vantaRef} className="fixed inset-0 w-full h-full z-0" style={{ minHeight: '100vh', minWidth: '100vw' }} />
+      
+      {/* Content Overlay */}
+      <div className="relative z-10 min-h-screen flex flex-col">
+        {/* Header */}
+        <header className="bg-white/20 backdrop-blur-md border-b border-blue-200/30 sticky top-0 z-50">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
@@ -104,7 +198,8 @@ const Features = () => {
         </div>
       </div>
 
-      <WeatherFooter />
+        <WeatherFooter />
+      </div>
     </div>
   );
 };

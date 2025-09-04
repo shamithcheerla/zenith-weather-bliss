@@ -359,13 +359,17 @@ const EnhancedWeatherDashboard = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={{
-      backgroundImage: `url(${backgroundImage})`,
+      background: weatherData 
+        ? `url(${backgroundImage})` 
+        : 'linear-gradient(135deg, #87CEEB 0%, #98D8E8 25%, #B0E0E6 50%, #E0F6FF 75%, #F0F8FF 100%)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundAttachment: 'fixed'
     }}>
       {/* Dynamic weather overlay */}
-      <div className="absolute inset-0 bg-black/40"></div>
+      <div className="absolute inset-0" style={{ 
+        backgroundColor: weatherData ? 'rgba(0,0,0,0.4)' : 'rgba(0,0,0,0.1)'
+      }}></div>
       
       {/* Fixed Search Header - Completely separate from content */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-blue-200/50 shadow-lg">
