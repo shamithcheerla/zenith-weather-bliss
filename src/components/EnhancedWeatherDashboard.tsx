@@ -361,7 +361,7 @@ const EnhancedWeatherDashboard = () => {
     <div className="min-h-screen relative overflow-hidden" style={{
       background: weatherData 
         ? `url(${backgroundImage})` 
-        : 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 15%, #0369a1 30%, #075985 45%, #0c4a6e 60%, #164e63 75%, #155e75 90%, #0f766e 100%)',
+        : 'linear-gradient(135deg, #87ceeb 0%, #4682b4 25%, #1e90ff 50%, #0066cc 75%, #003d7a 100%)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundAttachment: 'fixed'
