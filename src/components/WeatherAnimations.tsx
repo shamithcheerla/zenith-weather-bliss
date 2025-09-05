@@ -29,7 +29,7 @@ const WeatherAnimations: React.FC<WeatherAnimationsProps> = ({ condition, intens
       }
     };
 
-    // Enhanced particle system for different weather conditions
+    // Enhanced 3D particle system for different weather conditions
     const initParticles = () => {
       particles.length = 0;
       const count = getParticleCount();
@@ -39,30 +39,51 @@ const WeatherAnimations: React.FC<WeatherAnimationsProps> = ({ condition, intens
           particles.push({
             x: Math.random() * canvas.width,
             y: Math.random() * -canvas.height,
+            z: Math.random() * 100,
             width: 2 + Math.random() * 3,
-            height: 15 + Math.random() * 20,
-            speed: 8 + Math.random() * 12,
-            opacity: 0.4 + Math.random() * 0.4,
-            angle: Math.random() * 0.2 - 0.1
+            height: 15 + Math.random() * 25,
+            speed: 8 + Math.random() * 15,
+            opacity: 0.5 + Math.random() * 0.5,
+            angle: Math.random() * 0.3 - 0.15,
+            color: `hsl(${200 + Math.random() * 40}, ${70 + Math.random() * 30}%, ${50 + Math.random() * 20}%)`
           });
         } else if (condition.toLowerCase().includes('snow')) {
           particles.push({
             x: Math.random() * canvas.width,
             y: Math.random() * -canvas.height,
-            size: 3 + Math.random() * 8,
-            speed: 1 + Math.random() * 3,
-            opacity: 0.6 + Math.random() * 0.4,
-            drift: Math.random() * 2 - 1,
-            rotation: Math.random() * 360
+            z: Math.random() * 150,
+            size: 4 + Math.random() * 12,
+            speed: 1 + Math.random() * 4,
+            opacity: 0.7 + Math.random() * 0.3,
+            drift: Math.random() * 3 - 1.5,
+            rotation: Math.random() * 360,
+            rotationSpeed: Math.random() * 4 - 2,
+            sparkle: Math.random() > 0.7
           });
         } else if (condition.toLowerCase().includes('cloud')) {
           particles.push({
-            x: Math.random() * (canvas.width + 200) - 100,
-            y: Math.random() * canvas.height * 0.6,
-            width: 80 + Math.random() * 120,
-            height: 40 + Math.random() * 60,
-            speed: 0.3 + Math.random() * 0.7,
-            opacity: 0.1 + Math.random() * 0.2
+            x: Math.random() * (canvas.width + 300) - 150,
+            y: Math.random() * canvas.height * 0.7,
+            z: Math.random() * 80,
+            width: 100 + Math.random() * 200,
+            height: 50 + Math.random() * 100,
+            speed: 0.2 + Math.random() * 0.8,
+            opacity: 0.15 + Math.random() * 0.25,
+            puffiness: Math.random() * 0.5 + 0.5,
+            color: `hsl(210, ${10 + Math.random() * 20}%, ${85 + Math.random() * 10}%)`
+          });
+        } else if (condition.toLowerCase().includes('storm') || condition.toLowerCase().includes('thunder')) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * -canvas.height,
+            z: Math.random() * 120,
+            width: 3 + Math.random() * 4,
+            height: 20 + Math.random() * 30,
+            speed: 12 + Math.random() * 20,
+            opacity: 0.6 + Math.random() * 0.4,
+            angle: Math.random() * 0.4 - 0.2,
+            color: `hsl(${220 + Math.random() * 20}, ${60 + Math.random() * 30}%, ${40 + Math.random() * 20}%)`,
+            lightning: Math.random() > 0.95
           });
         }
       }
@@ -72,85 +93,163 @@ const WeatherAnimations: React.FC<WeatherAnimationsProps> = ({ condition, intens
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((particle, index) => {
-        if (condition.toLowerCase().includes('rain')) {
-          // Enhanced rain with 3D effect
+        if (condition.toLowerCase().includes('rain') && !condition.toLowerCase().includes('storm')) {
+          // Enhanced 3D rain with depth and color
           ctx.save();
-          ctx.globalAlpha = particle.opacity;
+          const depthScale = (particle.z + 50) / 150;
+          ctx.globalAlpha = particle.opacity * depthScale;
           
           const gradient = ctx.createLinearGradient(
             particle.x, particle.y,
             particle.x, particle.y + particle.height
           );
-          gradient.addColorStop(0, '#4fc3f7');
-          gradient.addColorStop(0.5, '#29b6f6');
-          gradient.addColorStop(1, 'rgba(33, 150, 243, 0)');
+          gradient.addColorStop(0, particle.color || '#00bcd4');
+          gradient.addColorStop(0.6, particle.color || '#0097a7');
+          gradient.addColorStop(1, 'rgba(0, 188, 212, 0)');
           
           ctx.fillStyle = gradient;
-          ctx.fillRect(particle.x, particle.y, particle.width, particle.height);
+          ctx.shadowColor = '#00bcd4';
+          ctx.shadowBlur = 3;
+          ctx.fillRect(particle.x, particle.y, particle.width * depthScale, particle.height * depthScale);
           ctx.restore();
 
-          particle.y += particle.speed;
-          particle.x += particle.angle * 2;
+          particle.y += particle.speed * depthScale;
+          particle.x += particle.angle * 3;
+          particle.z += 0.5;
 
           if (particle.y > canvas.height) {
             particle.y = -particle.height;
             particle.x = Math.random() * canvas.width;
+            particle.z = Math.random() * 100;
           }
         } else if (condition.toLowerCase().includes('snow')) {
-          // Enhanced snowflakes with rotation
+          // Enhanced 3D snowflakes with sparkle and rotation
           ctx.save();
-          ctx.globalAlpha = particle.opacity;
+          const depthScale = (particle.z + 70) / 220;
+          ctx.globalAlpha = particle.opacity * depthScale;
           ctx.translate(particle.x + particle.size / 2, particle.y + particle.size / 2);
           ctx.rotate((particle.rotation * Math.PI) / 180);
           
-          // Draw detailed snowflake
+          // Main snowflake body with depth
+          const size = particle.size * depthScale;
           ctx.fillStyle = '#ffffff';
-          ctx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size);
+          ctx.shadowColor = '#e3f2fd';
+          ctx.shadowBlur = 6;
           
-          // Add sparkle effect
-          ctx.fillStyle = '#e3f2fd';
-          ctx.fillRect(-particle.size / 4, -particle.size / 4, particle.size / 2, particle.size / 2);
+          // Draw detailed 6-pointed snowflake
+          ctx.beginPath();
+          for (let i = 0; i < 6; i++) {
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, -size);
+            ctx.moveTo(0, -size * 0.7);
+            ctx.lineTo(-size * 0.3, -size * 0.9);
+            ctx.moveTo(0, -size * 0.7);
+            ctx.lineTo(size * 0.3, -size * 0.9);
+            ctx.rotate(Math.PI / 3);
+          }
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+          
+          // Sparkle effect
+          if (particle.sparkle) {
+            ctx.fillStyle = '#e1f5fe';
+            ctx.fillRect(-size * 0.2, -size * 0.2, size * 0.4, size * 0.4);
+          }
           
           ctx.restore();
 
-          particle.y += particle.speed;
+          particle.y += particle.speed * depthScale;
           particle.x += particle.drift;
-          particle.rotation += 2;
+          particle.rotation += particle.rotationSpeed;
+          particle.z += 0.3;
 
           if (particle.y > canvas.height) {
             particle.y = -particle.size;
             particle.x = Math.random() * canvas.width;
+            particle.z = Math.random() * 150;
           }
         } else if (condition.toLowerCase().includes('cloud')) {
-          // Enhanced clouds with gradient
+          // Enhanced 3D clouds with realistic puffiness
           ctx.save();
-          ctx.globalAlpha = particle.opacity;
+          const depthScale = (particle.z + 30) / 110;
+          ctx.globalAlpha = particle.opacity * depthScale;
           
           const gradient = ctx.createRadialGradient(
             particle.x + particle.width / 2, particle.y + particle.height / 2, 0,
-            particle.x + particle.width / 2, particle.y + particle.height / 2, particle.width / 2
+            particle.x + particle.width / 2, particle.y + particle.height / 2, (particle.width / 2) * depthScale
           );
-          gradient.addColorStop(0, '#ffffff');
-          gradient.addColorStop(0.7, '#f5f5f5');
-          gradient.addColorStop(1, 'rgba(245, 245, 245, 0)');
+          gradient.addColorStop(0, particle.color || '#ffffff');
+          gradient.addColorStop(0.7, particle.color || '#f8f9fa');
+          gradient.addColorStop(1, 'rgba(248, 249, 250, 0)');
           
           ctx.fillStyle = gradient;
-          ctx.beginPath();
-          ctx.ellipse(
-            particle.x + particle.width / 2, 
-            particle.y + particle.height / 2,
-            particle.width / 2, 
-            particle.height / 2,
-            0, 0, 2 * Math.PI
-          );
-          ctx.fill();
+          
+          // Draw multiple overlapping circles for puffy cloud effect
+          const puffs = 5 + Math.floor(particle.puffiness * 3);
+          for (let i = 0; i < puffs; i++) {
+            const puffX = particle.x + (particle.width * i) / puffs + Math.sin(Date.now() * 0.001 + i) * 10;
+            const puffY = particle.y + Math.cos(Date.now() * 0.0008 + i) * 5;
+            const puffSize = (particle.width / puffs) * (1 + particle.puffiness * 0.5) * depthScale;
+            
+            ctx.beginPath();
+            ctx.ellipse(puffX, puffY, puffSize, puffSize * 0.7, 0, 0, 2 * Math.PI);
+            ctx.fill();
+          }
+          
           ctx.restore();
 
           particle.x += particle.speed;
+          particle.z += 0.2;
 
-          if (particle.x > canvas.width + 100) {
-            particle.x = -particle.width - 100;
-            particle.y = Math.random() * canvas.height * 0.6;
+          if (particle.x > canvas.width + 150) {
+            particle.x = -particle.width - 150;
+            particle.y = Math.random() * canvas.height * 0.7;
+            particle.z = Math.random() * 80;
+          }
+        } else if (condition.toLowerCase().includes('storm') || condition.toLowerCase().includes('thunder')) {
+          // Enhanced storm with lightning effects
+          ctx.save();
+          const depthScale = (particle.z + 60) / 180;
+          ctx.globalAlpha = particle.opacity * depthScale;
+          
+          // Storm rain with electric blue tint
+          const gradient = ctx.createLinearGradient(
+            particle.x, particle.y,
+            particle.x, particle.y + particle.height
+          );
+          gradient.addColorStop(0, particle.color || '#1e88e5');
+          gradient.addColorStop(0.5, '#1565c0');
+          gradient.addColorStop(1, 'rgba(21, 101, 192, 0)');
+          
+          ctx.fillStyle = gradient;
+          ctx.shadowColor = particle.lightning ? '#ffffff' : '#1e88e5';
+          ctx.shadowBlur = particle.lightning ? 15 : 5;
+          
+          if (particle.lightning) {
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(particle.x, particle.y);
+            ctx.lineTo(particle.x + Math.random() * 20 - 10, particle.y + particle.height * 0.3);
+            ctx.lineTo(particle.x + Math.random() * 30 - 15, particle.y + particle.height * 0.7);
+            ctx.lineTo(particle.x + Math.random() * 40 - 20, particle.y + particle.height);
+            ctx.stroke();
+          } else {
+            ctx.fillRect(particle.x, particle.y, particle.width * depthScale, particle.height * depthScale);
+          }
+          
+          ctx.restore();
+
+          particle.y += particle.speed * depthScale;
+          particle.x += particle.angle * 4;
+          particle.z += 0.7;
+
+          if (particle.y > canvas.height || (particle.lightning && Math.random() > 0.7)) {
+            particle.y = -particle.height;
+            particle.x = Math.random() * canvas.width;
+            particle.z = Math.random() * 120;
+            particle.lightning = Math.random() > 0.95;
           }
         }
       });
@@ -215,10 +314,12 @@ const WeatherAnimations: React.FC<WeatherAnimationsProps> = ({ condition, intens
     );
   }
 
-  // Return canvas for rain, snow, and clouds
+  // Return canvas for rain, snow, clouds, and storms
   if (condition.toLowerCase().includes('rain') || 
       condition.toLowerCase().includes('snow') || 
-      condition.toLowerCase().includes('cloud')) {
+      condition.toLowerCase().includes('cloud') ||
+      condition.toLowerCase().includes('storm') ||
+      condition.toLowerCase().includes('thunder')) {
     return (
       <canvas
         ref={canvasRef}
